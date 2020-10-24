@@ -16,9 +16,6 @@ namespace Tuxxedo;
 
 class AssertionException extends Exception
 {
-	/**
-	 * @param string|null $message
-	 */
 	public function __construct(string $message = null)
 	{
 		if ($message !== null) {

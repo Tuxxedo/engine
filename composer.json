@@ -1,0 +1,26 @@
+{
+  "name": "tuxxedo/engine",
+  "version": "0.1.0-dev",
+  "description": "Tuxxedo Engine, a PHP8 based framework",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "homepage": "https://tuxxedo.app/",
+  "support": {
+    "issues": "https://github.com/tuxxedo/engine/issues",
+    "source": "https://github.com/tuxxedo/engine"
+  },
+  "authors": [
+    {
+      "name": "Kalle Sommer Nielsen",
+      "email": "kalle@tuxxedo.app"
+    }
+  ],
+  "require": {
+    "php": "^8.0"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  }
+}

@@ -30,7 +30,6 @@ class Json implements ReaderInterface
 	 */
 	private array $groups = [];
 
-
 	/**
 	 * @var array<string, mixed>
 	 */
@@ -44,10 +43,10 @@ class Json implements ReaderInterface
 	/**
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $json) : self
+	public static function fromString(string $json, int $depth = 512) : self
 	{
 		try {
-			$json = \json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
+			$json = \json_decode($json, true, $depth, \JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
 			// @todo Look at rethrow logic to preserve trace
 			throw new ReaderException($e->getMessage());
@@ -59,7 +58,7 @@ class Json implements ReaderInterface
 	/**
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $jsonFile) : self
+	public static function fromFile(string $jsonFile, int $depth = 512) : self
 	{
 		$json = @\file_get_contents($jsonFile);
 
@@ -67,6 +66,6 @@ class Json implements ReaderInterface
 			throw new ReaderException('Unable to read JSON file');
 		}
 
-		return self::fromString($json);
+		return self::fromString($json, $depth);
 	}
 }

@@ -20,7 +20,14 @@ use Tuxxedo\Config\ReaderInterface;
 
 class Ini implements ReaderInterface
 {
+	/**
+	 * @var array<string, array<string, mixed>>
+	 */
 	private array $groups = [];
+
+	/**
+	 * @var array<string, mixed>
+	 */
 	private array $values = [];
 
 	private function __construct(array $config)

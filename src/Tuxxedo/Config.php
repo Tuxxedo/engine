@@ -16,7 +16,7 @@ namespace Tuxxedo;
 
 use Tuxxedo\Config\ReaderInterface;
 
-class Config
+class Config implements \ArrayAccess
 {
 	protected ReaderInterface $reader;
 
@@ -26,9 +26,48 @@ class Config
 	}
 
 	/**
+	 * @param string $directive
+	 */
+	public function offsetExists($directive) : bool
+	{
+		return $this->hasValue($directive);
+	}
+
+	/**
+	 * @param string $directive
+	 *
 	 * @throws AssertionException
 	 */
+	public function offsetGet($directive) : mixed
+	{
+		return $this->getValue($directive);
+	}
 
+	/**
+	 * @param string $directive
+	 * @param mixed $value
+	 *
+	 * @throws ImmutableException
+	 */
+	public function offsetSet($directive, $value)
+	{
+		throw new ImmutableException;
+	}
+
+	/**
+	 * @param string $directive
+	 * @return void
+	 *
+	 * @throws ImmutableException
+	 */
+	public function offsetUnset($directive) : void
+	{
+		throw new ImmutableException;
+	}
+
+	/**
+	 * @throws AssertionException
+	 */
 	public function getGroup(string $group) : array
 	{
 		return $this->reader->group($group);
@@ -36,7 +75,7 @@ class Config
 
 	public function hasGroup(string $group) : bool
 	{
-		return $this->reader->groupExists($group);
+		return $this->reader->hasGroup($group);
 	}
 
 	/**
@@ -49,7 +88,7 @@ class Config
 
 	public function hasValue(string $directive) : bool
 	{
-		return $this->reader->valueExists($directive);
+		return $this->reader->hasValue($directive);
 	}
 
 	/**
@@ -57,11 +96,11 @@ class Config
 	 */
 	public function getValueFromGroup(string $group, string $directive) : mixed
 	{
-		return $this->reader->valueInGroup($group, $directive);
+		return $this->reader->valueFromGroup($group, $directive);
 	}
 
 	public function hasValueFromGroup(string $group, string $directive) : bool
 	{
-		return $this->reader->valueExistsInGroup($group, $directive);
+		return $this->reader->hasValueInGroup($group, $directive);
 	}
 }

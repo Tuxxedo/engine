@@ -74,28 +74,25 @@ class Ini implements ReaderInterface
 		return new self($ini);
 	}
 
-	public function groupExists(string $group) : bool
+	public function hasGroup(string $group) : bool
 	{
 		return isset($this->groups[$group]);
 	}
 
-	public function valueExists(string $directive) : bool
+	public function hasValue(string $directive) : bool
 	{
 		return isset($this->values[$directive]);
 	}
 
-	public function valueExistsInGroup(string $group, string $directive) : bool
+	public function hasValueInGroup(string $group, string $directive) : bool
 	{
-		return $this->groupExists($group) && isset($this->groups[$group][$directive]);
+		return $this->hasGroup($group) && isset($this->groups[$group][$directive]);
 	}
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function group(string $group) : array
 	{
 		assert(
-			$this->groupExists($group),
+			$this->hasGroup($group),
 			new AssertionException(
 				'Invalid group: `%s`',
 				$group,
@@ -105,13 +102,10 @@ class Ini implements ReaderInterface
 		return $this->groups[$group];
 	}
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function value(string $directive) : mixed
 	{
 		assert(
-			$this->valueExists($directive),
+			$this->hasValue($directive),
 			new AssertionException(
 				'Invalid directive: `%s`',
 				$directive,
@@ -121,13 +115,10 @@ class Ini implements ReaderInterface
 		return $this->values[$directive];
 	}
 
-	/**
-	 * @throws AssertionException
-	 */
-	public function valueInGroup(string $group, string $directive) : mixed
+	public function valueFromGroup(string $group, string $directive) : mixed
 	{
 		assert(
-			$this->groupExists($group),
+			$this->hasGroup($group),
 			new AssertionException(
 				'Invalid group: `%s`',
 				$group,
@@ -135,7 +126,7 @@ class Ini implements ReaderInterface
 		);
 
 		assert(
-			$this->valueExistsInGroup($group, $directive),
+			$this->hasValueInGroup($group, $directive),
 			new AssertionException(
 				'Invalid direction: `%s` in group `%s`',
 				$directive,

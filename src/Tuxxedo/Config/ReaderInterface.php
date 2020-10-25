@@ -4,8 +4,8 @@
  * Tuxxedo Engine
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  *
- * @copyright        2006-2020 Kalle Sommer Nielsen <kalle@tuxxedo.app>
- * @license        MIT
+ * @copyright 	2006-2020 Kalle Sommer Nielsen <kalle@tuxxedo.app>
+ * @license 	MIT
  *
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */
@@ -14,17 +14,28 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config;
 
+use Tuxxedo\AssertionException;
+
 interface ReaderInterface
 {
-	public function groupExists(string $group) : bool;
+	public function hasGroup(string $group) : bool;
 
-	public function valueExists(string $directive) : bool;
+	public function hasValue(string $directive) : bool;
 
-	public function valueExistsInGroup(string $group, string $directive) : bool;
+	public function hasValueInGroup(string $group, string $directive) : bool;
 
+	/**
+	 * @throws AssertionException
+	 */
 	public function group(string $group) : array;
 
+	/**
+	 * @throws AssertionException
+	 */
 	public function value(string $directive) : mixed;
 
-	public function valueInGroup(string $group, string $directive) : mixed;
+	/**
+	 * @throws AssertionException
+	 */
+	public function valueFromGroup(string $group, string $directive) : mixed;
 }

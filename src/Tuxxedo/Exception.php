@@ -16,14 +16,10 @@ namespace Tuxxedo;
 
 class Exception extends \Exception
 {
-	/**
-	 * @param string $message
-	 * @param string ...
-	 */
-	public function __construct(string $message)
+	public function __construct(string ...$messageArgs)
 	{
 		parent::__construct(
-			\call_user_func_array('\sprintf', \func_get_args())
+			\call_user_func('\sprintf', ...$messageArgs)
 		);
 	}
 }

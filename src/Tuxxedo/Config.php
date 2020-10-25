@@ -15,8 +15,9 @@ declare(strict_types = 1);
 namespace Tuxxedo;
 
 use Tuxxedo\Config\ReaderInterface;
+use Tuxxedo\Design\Immutable;
 
-class Config implements \ArrayAccess
+class Config implements \ArrayAccess, Immutable
 {
 	protected ReaderInterface $reader;
 
@@ -63,6 +64,11 @@ class Config implements \ArrayAccess
 	public function offsetUnset($directive) : void
 	{
 		throw new ImmutableException;
+	}
+
+	public function getReader() : ReaderInterface
+	{
+		return $this->reader;
 	}
 
 	public function getReaderType() : string

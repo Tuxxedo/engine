@@ -18,7 +18,7 @@ use Tuxxedo\Config\ReaderTrait;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\Config\ReaderInterface;
 
-class Ini implements ReaderInterface
+class Json implements ReaderInterface
 {
 	use ReaderTrait
 	{
@@ -29,6 +29,7 @@ class Ini implements ReaderInterface
 	 * @var array<string, array<string, mixed>>
 	 */
 	private array $groups = [];
+
 
 	/**
 	 * @var array<string, mixed>
@@ -43,28 +44,29 @@ class Ini implements ReaderInterface
 	/**
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $ini) : self
+	public static function fromString(string $json) : self
 	{
-		$ini = \parse_ini_string($ini, true, \INI_SCANNER_TYPED);
-
-		if (!$ini) {
-			throw new ReaderException('Unable to parse ini string');
+		try {
+			$json = \json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			// @todo Look at rethrow logic to preserve trace
+			throw new ReaderException($e->getMessage());
 		}
 
-		return new self($ini);
+		return new self($json);
 	}
 
 	/**
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $iniFile) : self
+	public static function fromFile(string $jsonFile) : self
 	{
-		$ini = \parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
+		$json = @\file_get_contents($jsonFile);
 
-		if (!$ini) {
-			throw new ReaderException('Unable to parse ini file');
+		if (!$json) {
+			throw new ReaderException('Unable to read JSON file');
 		}
 
-		return new self($ini);
+		return self::fromString($json);
 	}
 }

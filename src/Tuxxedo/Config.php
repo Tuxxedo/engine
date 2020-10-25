@@ -65,6 +65,11 @@ class Config implements \ArrayAccess
 		throw new ImmutableException;
 	}
 
+	public function getReaderType() : string
+	{
+		return $this->reader::class;
+	}
+
 	/**
 	 * @throws AssertionException
 	 */

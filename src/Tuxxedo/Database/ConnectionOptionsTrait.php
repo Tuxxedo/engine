@@ -59,6 +59,18 @@ trait ConnectionOptionsTrait
 	}
 
 	/**
+	 * @param array<string, mixed> $options
+	 *
+	 * @throws AssertionException
+	 */
+	public function setOptions(array $options) : void
+	{
+		foreach ($options as $name => $value) {
+			$this->setOption($name, $value);
+		}
+	}
+
+	/**
 	 * @return array<string, mixed>
 	 */
 	public function getOptions() : array

@@ -28,18 +28,20 @@ class Config implements \ArrayAccess, Immutable
 
 	/**
 	 * @param string $directive
+	 * @return bool
 	 */
-	public function offsetExists($directive) : bool
+	public function offsetExists(mixed $directive) : bool
 	{
 		return $this->hasValue($directive);
 	}
 
 	/**
 	 * @param string $directive
+	 * @return mixed
 	 *
 	 * @throws AssertionException
 	 */
-	public function offsetGet($directive) : mixed
+	public function offsetGet(mixed $directive) : mixed
 	{
 		return $this->getValue($directive);
 	}
@@ -47,10 +49,11 @@ class Config implements \ArrayAccess, Immutable
 	/**
 	 * @param string $directive
 	 * @param mixed $value
+	 * @return void
 	 *
 	 * @throws ImmutableException
 	 */
-	public function offsetSet($directive, $value)
+	public function offsetSet(mixed $directive, mixed $value) : void
 	{
 		throw new ImmutableException;
 	}
@@ -61,7 +64,7 @@ class Config implements \ArrayAccess, Immutable
 	 *
 	 * @throws ImmutableException
 	 */
-	public function offsetUnset($directive) : void
+	public function offsetUnset(mixed $directive) : void
 	{
 		throw new ImmutableException;
 	}

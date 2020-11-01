@@ -18,7 +18,12 @@ use Tuxxedo\AssertionException;
 
 interface ConnectionInterface
 {
-
+	/**
+	 * @param array<string, mixed> $options
+	 *
+	 * @throws AssertionException
+	 */
+	public function __construct(array $options);
 
 	public function hasOption(string $name) : bool;
 
@@ -32,5 +37,23 @@ interface ConnectionInterface
 	 */
 	public function getOption(string $name) : mixed;
 
+	/**
+	 * @param array<string, mixed> $options
+	 * @return void
+	 *
+	 * @throws AssertionException
+	 */
+	public function setOptions(array $options) : void;
+
 	public function getOptions() : array;
+
+	public function getLink() : mixed;
+
+	public function isConnected() : bool;
+
+	public function getInsertId() : int;
+
+	public function prepare(string $sql) : StatementInterface;
+
+	public function query(string $sql) : ResultInterface;
 }

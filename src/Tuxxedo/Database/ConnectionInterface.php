@@ -14,19 +14,23 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Database;
 
+use Tuxxedo\AssertionException;
+
 interface ConnectionInterface
 {
+
+
+	public function hasOption(string $name) : bool;
+
 	/**
-	 * @throws ConnectionException
+	 * @throws AssertionException
 	 */
-	public function __construct(
-		string $host,
-		string $username,
-		string $password,
-		string $database,
-		?int $port = null,
-		?int $timeout = 3,
-		bool $persistent = false,
-		?string $socket = null,
-	);
+	public function setOption(string $name, mixed $value) : void;
+
+	/**
+	 * @throws AssertionException
+	 */
+	public function getOption(string $name) : mixed;
+
+	public function getOptions() : array;
 }

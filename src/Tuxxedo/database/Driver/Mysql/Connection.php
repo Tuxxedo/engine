@@ -26,12 +26,13 @@ class Connection implements ConnectionInterface
 		string $password,
 		string $database,
 		?int $port = null,
-		bool $persistent = false
+		?int $timeout = 3,
+		bool $persistent = false,
+		?string $socket = null,
 	)
 	{
-		var_dump(\func_get_args());
 
-		$this->link = new \mysqli(
-		);
+
+		$this->link = new \mysqli();
 	}
 }

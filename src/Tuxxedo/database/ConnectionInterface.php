@@ -25,6 +25,8 @@ interface ConnectionInterface
 		string $password,
 		string $database,
 		?int $port = null,
-		bool $persistent = false
+		?int $timeout = 3,
+		bool $persistent = false,
+		?string $socket = null,
 	);
 }

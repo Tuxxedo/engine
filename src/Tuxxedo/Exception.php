@@ -16,7 +16,7 @@ namespace Tuxxedo;
 
 class Exception extends \Exception
 {
-	public function __construct(string ...$messageArgs)
+	public function __construct(string | int | float ...$messageArgs)
 	{
 		parent::__construct(
 			\call_user_func('\sprintf', ...$messageArgs)

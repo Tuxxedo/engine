@@ -37,7 +37,7 @@ trait ReaderTrait
 
 			foreach ($values as $name => $value) {
 				$this->groups[$section][$name] = $value;
-				$this->values[$section . '.' . $name] = &$this->groups[$section][$name];
+				$this->values[$section . '.' . $name] = $this->groups[$section][$name];
 			}
 		}
 	}

@@ -59,12 +59,12 @@ class Ini implements ReaderInterface
 	 */
 	public static function fromFile(string $iniFile) : self
 	{
-		$ini = \parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
+		$iniFile = \parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
 
-		if (!$ini) {
+		if (!$iniFile) {
 			throw new ReaderException('Unable to parse ini file');
 		}
 
-		return new self($ini);
+		return new self($iniFile);
 	}
 }

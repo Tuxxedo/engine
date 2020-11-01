@@ -12,8 +12,19 @@
 
 declare(strict_types = 1);
 
-namespace Tuxxedo;
+namespace Tuxxedo\Database;
 
-class AssertionException extends Exception
+interface ConnectionInterface
 {
+	/**
+	 * @throws ConnectionException
+	 */
+	public function __construct(
+		string $host,
+		string $username,
+		string $password,
+		string $database,
+		?int $port = null,
+		bool $persistent = false
+	);
 }

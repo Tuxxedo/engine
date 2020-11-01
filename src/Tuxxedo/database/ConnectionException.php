@@ -12,8 +12,18 @@
 
 declare(strict_types = 1);
 
-namespace Tuxxedo;
+namespace Tuxxedo\Database;
 
-class AssertionException extends Exception
+use Tuxxedo\Exception;
+
+class ConnectionException extends Exception
 {
+	public function __construct(int $code, string $message)
+	{
+		parent::__construct(
+			'Unable to connect to database: [%d] %s',
+			$code,
+			$message
+		);
+	}
 }

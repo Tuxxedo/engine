@@ -7,6 +7,7 @@ use Tuxxedo\AssertionException;
 use Tuxxedo\Config;
 use Tuxxedo\Config\Reader\Ini;
 use Tuxxedo\Config\Reader\Json;
+use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\ImmutableException;
 
@@ -243,5 +244,67 @@ final class ConfigTest extends TestCase
 
 		$this->assertIsArray($group);
 		$this->assertTrue(isset($group['name']));
+
+		$this->assertSame((int) \substr($group['name'], 4), $group['version']);
 	}
+
+	public function configGroupsDataProvider() : \Generator
+	{
+		yield [
+			Ini::class,
+			"[app]\nname = 'Demo 1'\nversion = 1",
+			'app',
+			AppConfig::class
+		];
+
+		yield [
+			Json::class,
+			'{"app":{"name": "Demo 1", "version": 1}}',
+			'app',
+			AppConfig::class
+		];
+	}
+
+	/**
+	 * @dataProvider configGroupsDataProvider
+	 */
+	public function testGroups(string $readerClassName, string $input, string $mapGroup, string $mapClassName) : void
+	{
+		$map = new GroupMap;
+		$map[$mapGroup] = $mapClassName;
+
+		$configA = new Config(
+			$readerClassName::fromString(
+				$input,
+				$map
+			)
+		);
+
+		$configB = new Config(
+			$readerClassName::fromString(
+				$input
+			)
+		);
+
+		$this->assertTrue($configA->hasGroup($mapGroup));
+		$this->assertInstanceOf($mapClassName, $configA->getGroup($mapGroup));
+
+		$this->assertTrue($configB->hasGroup($mapGroup));
+		$this->assertIsArray($configB->getGroup($mapGroup));
+
+		$groupA = $configA->getGroup($mapGroup);
+		$groupB = $configB->getGroup($mapGroup);
+
+		$this->assertNotNull($groupA->name);
+		$this->assertNotNull($groupA->version);
+
+		$this->assertSame($groupA->name, $groupB['name']);
+		$this->assertSame($groupA->version, $groupB['version']);
+	}
+}
+
+class AppConfig
+{
+	public ?string $name = null;
+	public ?int $version = null;
 }

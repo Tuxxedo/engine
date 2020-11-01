@@ -14,17 +14,6 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Database;
 
-interface ResultInterface extends \Countable
+class ResultRow
 {
-	public function __construct(ConnectionInterface $link, mixed $result);
-
-	public function getAffectedRows() : int;
-
-	public function fetch() : object;
-
-	public function fetchArray() : array;
-
-	public function fetchAssoc() : array;
-
-	public function fetchObject(string $className, array $parameters = null) : object;
 }

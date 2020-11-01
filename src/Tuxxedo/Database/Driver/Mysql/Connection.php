@@ -17,6 +17,9 @@ namespace Tuxxedo\Database\Driver\Mysql;
 use Tuxxedo\Database\ConnectionException;
 use Tuxxedo\Database\ConnectionInterface;
 use Tuxxedo\Database\ConnectionOptionsTrait;
+use Tuxxedo\Database\QueryException;
+use Tuxxedo\Database\ResultInterface;
+use Tuxxedo\Database\StatementInterface;
 
 class Connection implements ConnectionInterface
 {
@@ -99,5 +102,72 @@ class Connection implements ConnectionInterface
 	public function isConnected() : bool
 	{
 		return $this->link instanceof \mysqli;
+	}
+
+	public function ping() : bool
+	{
+		try {
+			$this->getInternalLink()->ping();
+		} catch (ConnectionException) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return int
+	 *
+	 * @throws ConnectionException
+	 */
+	public function getInsertId() : int
+	{
+		return $this->getInternalLink()->insert_id;
+	}
+
+	/**
+	 * @throws ConnectionException
+	 */
+	public function escape(string $input) : string
+	{
+		return $this->getInternalLink()->real_escape_string($input);
+	}
+
+	/**
+	 * @param string $sql
+	 * @return Statement
+	 *
+	 * @throws ConnectionException
+	 * @throws QueryException
+	 */
+	public function prepare(string $sql) : StatementInterface
+	{
+		// @todo -- Needs unified syntax for other DBRMS
+	}
+
+	/**
+	 * @param string $sql
+	 * @return Result
+	 *
+	 * @throws ConnectionException
+	 * @throws QueryException
+	 */
+	public function query(string $sql) : ResultInterface
+	{
+		$link = $this->getInternalLink();
+		$result = $link->query($sql);
+
+		if ($result === false) {
+			throw new QueryException(
+				$link->errno,
+				$link->error,
+				$sql
+			);
+		}
+
+		return new Result(
+			$this,
+			$result
+		);
 	}
 }

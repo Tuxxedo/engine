@@ -51,9 +51,27 @@ interface ConnectionInterface
 
 	public function isConnected() : bool;
 
+	public function ping() : bool;
+
+	/**
+	 * @throws ConnectionException
+	 */
 	public function getInsertId() : int;
 
+	/**
+	 * @throws ConnectionException
+	 */
+	public function escape(string $input) : string;
+
+	/**
+	 * @throws ConnectionException
+	 * @throws QueryException
+	 */
 	public function prepare(string $sql) : StatementInterface;
 
+	/**
+	 * @throws ConnectionException
+	 * @throws QueryException
+	 */
 	public function query(string $sql) : ResultInterface;
 }

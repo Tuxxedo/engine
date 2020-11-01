@@ -56,8 +56,9 @@ trait ReaderTrait
 		}
 	}
 
-	private function mapGroup()
+	public function isGroupMapped(string $group) : bool
 	{
+		return $this->hasGroup($group) && isset($this->groupMap[$group]);
 	}
 
 	public function hasGroup(string $group) : bool

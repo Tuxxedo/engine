@@ -287,6 +287,7 @@ final class ConfigTest extends TestCase
 		);
 
 		$this->assertTrue($configA->hasGroup($mapGroup));
+		$this->assertTrue($configA->isGroupMapped($mapGroup));
 		$this->assertInstanceOf($mapClassName, $configA->getGroup($mapGroup));
 
 		$this->assertTrue($configB->hasGroup($mapGroup));

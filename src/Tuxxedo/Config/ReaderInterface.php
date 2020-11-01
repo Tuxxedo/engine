@@ -18,6 +18,8 @@ use Tuxxedo\AssertionException;
 
 interface ReaderInterface
 {
+	public function isGroupMapped(string $group) : bool;
+
 	public function hasGroup(string $group) : bool;
 
 	public function hasValue(string $directive) : bool;

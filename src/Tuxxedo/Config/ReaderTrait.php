@@ -17,6 +17,7 @@ namespace Tuxxedo\Config;
 use Tuxxedo\AssertionException;
 
 /**
+ * @property GroupMap $groupMap
  * @property array<string, array<string, mixed>> $groups
  * @property array<string, mixed> $values
  */
@@ -28,20 +29,36 @@ trait ReaderTrait
 	 */
 	public function index(array $config) : void
 	{
-		foreach ($config as $section => $values) {
+		foreach ($config as $group => $values) {
 			if (!$values) {
 				continue;
 			}
 
-			$this->groups[$section] = [];
+			if (isset($this->groupMap[$group])) {
+				$this->groups[$group] = new $this->groupMap[$group];
+
+				foreach ($values as $name => $value) {
+					assert(\property_exists($this->groups[$group], $name));
+
+					$this->groups[$group]->{$name} = $value;
+					$this->values[$group . '.' . $name] = $this->groups[$group]->{$name};
+				}
+
+				continue;
+			}
+
+			$this->groups[$group] = [];
 
 			foreach ($values as $name => $value) {
-				$this->groups[$section][$name] = $value;
-				$this->values[$section . '.' . $name] = $this->groups[$section][$name];
+				$this->groups[$group][$name] = $value;
+				$this->values[$group . '.' . $name] = $this->groups[$group][$name];
 			}
 		}
 	}
 
+	private function mapGroup()
+	{
+	}
 
 	public function hasGroup(string $group) : bool
 	{
@@ -55,10 +72,10 @@ trait ReaderTrait
 
 	public function hasValueInGroup(string $group, string $directive) : bool
 	{
-		return $this->hasGroup($group) && isset($this->groups[$group][$directive]);
+		return $this->hasGroup($group) && (isset($this->groups[$group]->{$directive}) || isset($this->groups[$group][$directive]));
 	}
 
-	public function group(string $group) : array
+	public function group(string $group) : array | object
 	{
 		assert(
 			$this->hasGroup($group),
@@ -102,6 +119,10 @@ trait ReaderTrait
 				$group,
 			)
 		);
+
+		if (isset($this->groups[$group]->{$directive})) {
+			return $this->groups[$group]->{$directive};
+		}
 
 		return $this->groups[$group][$directive];
 	}

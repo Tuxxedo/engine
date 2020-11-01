@@ -14,6 +14,7 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config\Reader;
 
+use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Config\ReaderTrait;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\Config\ReaderInterface;
@@ -25,8 +26,10 @@ class Ini implements ReaderInterface
 		index as private;
 	}
 
+	private ?GroupMap $groupMap = null;
+
 	/**
-	 * @var array<string, array<string, mixed>>
+	 * @var array<string, array<string, mixed>|object>
 	 */
 	private array $groups = [];
 
@@ -35,15 +38,17 @@ class Ini implements ReaderInterface
 	 */
 	private array $values = [];
 
-	private function __construct(array $config)
+	private function __construct(array $config, GroupMap $groupMap = null)
 	{
+		$this->groupMap = $groupMap;
+
 		$this->index($config);
 	}
 
 	/**
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $ini) : self
+	public static function fromString(string $ini, GroupMap $groupMap = null) : self
 	{
 		$ini = \parse_ini_string($ini, true, \INI_SCANNER_TYPED);
 
@@ -51,13 +56,16 @@ class Ini implements ReaderInterface
 			throw new ReaderException('Unable to parse ini string');
 		}
 
-		return new self($ini);
+		return new self(
+			$ini,
+			$groupMap
+		);
 	}
 
 	/**
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $iniFile) : self
+	public static function fromFile(string $iniFile, GroupMap $groupMap = null) : self
 	{
 		$iniFile = \parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
 
@@ -65,6 +73,9 @@ class Ini implements ReaderInterface
 			throw new ReaderException('Unable to parse ini file');
 		}
 
-		return new self($iniFile);
+		return new self(
+			$iniFile,
+			$groupMap
+		);
 	}
 }

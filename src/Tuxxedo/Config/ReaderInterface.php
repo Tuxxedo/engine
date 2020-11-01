@@ -27,7 +27,7 @@ interface ReaderInterface
 	/**
 	 * @throws AssertionException
 	 */
-	public function group(string $group) : array;
+	public function group(string $group) : array | object;
 
 	/**
 	 * @throws AssertionException

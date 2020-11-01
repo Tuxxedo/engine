@@ -82,7 +82,7 @@ class Config implements \ArrayAccess, Immutable
 	/**
 	 * @throws AssertionException
 	 */
-	public function getGroup(string $group) : array
+	public function getGroup(string $group) : array | object
 	{
 		return $this->reader->group($group);
 	}

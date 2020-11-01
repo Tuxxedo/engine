@@ -155,9 +155,9 @@ class Connection implements ConnectionInterface
 	public function query(string $sql) : ResultInterface
 	{
 		$link = $this->getInternalLink();
-		$result = $link->query($sql);
+		$stmt = $link->prepare($sql);
 
-		if ($result === false) {
+		if ($stmt === false || !$stmt->execute()) {
 			throw new QueryException(
 				$link->errno,
 				$link->error,
@@ -167,7 +167,7 @@ class Connection implements ConnectionInterface
 
 		return new Result(
 			$this,
-			$result
+			$stmt
 		);
 	}
 }

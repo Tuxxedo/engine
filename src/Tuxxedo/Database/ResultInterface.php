@@ -14,9 +14,9 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Database;
 
-interface ResultInterface extends \Countable
+interface ResultInterface extends \Iterator, \Countable
 {
-	public function __construct(ConnectionInterface $link, mixed $result);
+	public function __construct(ConnectionInterface $link, mixed $stmt);
 
 	public function getAffectedRows() : int;
 

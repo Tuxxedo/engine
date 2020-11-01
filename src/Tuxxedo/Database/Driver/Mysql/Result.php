@@ -21,24 +21,71 @@ use Tuxxedo\Database\ResultRow;
 class Result implements ResultInterface
 {
 	private ConnectionInterface $link;
-	private \mysqli_result | bool $result;
+	private \mysqli_result | bool $result = true;
+
+	private int $iteratorPosition = 0;
+	private int $affectedRows = 0;
 
 	/**
 	 * @param Connection $link
-	 * @param \mysqli_result|true $result
+	 * @param \mysqli_stmt|true $result
 	 */
-	public function __construct(ConnectionInterface $link, mixed $result)
+	public function __construct(ConnectionInterface $link, mixed $stmt)
 	{
 		assert($link->isConnected());
-		assert($result instanceof \mysqli_result || $result === true);
+		assert($stmt instanceof \mysqli_stmt || $stmt === true);
 
 		$this->link = $link;
-		$this->result = $result;
+		$this->affectedRows = $stmt->affected_rows;
+
+		if ($result = $stmt->get_result()) {
+			$this->result = $result;
+		}
 	}
 
 	public function getAffectedRows() : int
 	{
-		return $this->link->getLink()->affected_rows;
+		return $this->affectedRows;
+	}
+
+	public function rewind() : void
+	{
+		assert($this->result instanceof \mysqli_result);
+		assert($this->result->num_rows > 0);
+
+		$this->result->data_seek(0);
+	}
+
+	public function valid() : bool
+	{
+		assert($this->result instanceof \mysqli_result);
+
+		return $this->iteratorPosition < $this->result->num_rows;
+	}
+
+	public function next() : void
+	{
+		assert($this->result instanceof \mysqli_result);
+
+		$this->iteratorPosition++;
+	}
+
+	public function key() : int
+	{
+		assert($this->result instanceof \mysqli_result);
+
+		return $this->iteratorPosition;
+	}
+
+	public function current() : mixed
+	{
+		assert($this->result instanceof \mysqli_result);
+
+		$this->result->data_seek(
+			$this->iteratorPosition
+		);
+
+		return $this->fetch();
 	}
 
 	public function count() : int

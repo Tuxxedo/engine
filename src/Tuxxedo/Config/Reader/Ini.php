@@ -50,7 +50,7 @@ class Ini implements ReaderInterface
 	 */
 	public static function fromString(string $ini, GroupMap $groupMap = null) : self
 	{
-		$ini = \parse_ini_string($ini, true, \INI_SCANNER_TYPED);
+		$ini = @\parse_ini_string($ini, true, \INI_SCANNER_TYPED);
 
 		if (!$ini) {
 			throw new ReaderException('Unable to parse ini string');
@@ -67,7 +67,7 @@ class Ini implements ReaderInterface
 	 */
 	public static function fromFile(string $iniFile, GroupMap $groupMap = null) : self
 	{
-		$iniFile = \parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
+		$iniFile = @\parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
 
 		if (!$iniFile) {
 			throw new ReaderException('Unable to parse ini file');

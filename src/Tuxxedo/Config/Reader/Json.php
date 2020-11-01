@@ -53,7 +53,6 @@ class Json implements ReaderInterface
 		try {
 			$json = \json_decode($json, true, $depth, \JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
-			// @todo Look at rethrow logic to preserve trace
 			throw new ReaderException($e->getMessage());
 		}
 
@@ -68,14 +67,14 @@ class Json implements ReaderInterface
 	 */
 	public static function fromFile(string $jsonFile, GroupMap $groupMap = null, int $depth = 512) : self
 	{
-		$json = @\file_get_contents($jsonFile);
+		$jsonFile = @\file_get_contents($jsonFile);
 
-		if (!$json) {
+		if (!$jsonFile) {
 			throw new ReaderException('Unable to read JSON file');
 		}
 
 		return self::fromString(
-			$json,
+			$jsonFile,
 			$groupMap,
 			$depth
 		);

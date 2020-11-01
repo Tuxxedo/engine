@@ -19,6 +19,10 @@
     "php": "^8.0",
     "ext-mysqli": "*"
   },
+  "require-dev": {
+    "ext-mbstring": "*",
+    "phpunit/phpunit": "^9.4"
+  },
   "autoload": {
     "classmap": [
       "src/"

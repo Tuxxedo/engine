@@ -61,6 +61,28 @@ final class DiTest extends TestCase
 		$this->assertTrue($di->isLoaded($name));
 	}
 
+	/**
+	 * @dataProvider diServicesDataProvider
+	 */
+	public function testDiUnregister(string $name, \Closure $initializer, \Closure $expectance) : void
+	{
+		$di = new Di;
+		$di->register($name, $initializer);
+
+		$this->assertTrue($di->isRegistered($name));
+		$this->assertFalse($di->isLoaded($name));
+
+		$expectance($di->get($name));
+
+		$this->assertTrue($di->isRegistered($name));
+		$this->assertTrue($di->isLoaded($name));
+
+		$di->unregister($name);
+
+		$this->assertFalse($di->isLoaded($name));
+		$this->assertFalse($di->isRegistered($name));
+	}
+
 	public function testDiMultiple() : void
 	{
 		$di = new Di;

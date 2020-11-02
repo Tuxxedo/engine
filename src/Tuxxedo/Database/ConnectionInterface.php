@@ -19,11 +19,11 @@ use Tuxxedo\AssertionException;
 interface ConnectionInterface
 {
 	/**
-	 * @param array<string, mixed> $options
+	 * @param array<string, mixed>|object $options
 	 *
 	 * @throws AssertionException
 	 */
-	public function __construct(array $options);
+	public function __construct(array | object $options);
 
 	public function hasOption(string $name) : bool;
 

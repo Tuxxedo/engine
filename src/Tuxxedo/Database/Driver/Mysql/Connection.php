@@ -52,7 +52,7 @@ class Connection implements ConnectionInterface
 		self::OPTION_SSL => false,
 	];
 
-	public function __construct(array $options)
+	public function __construct(array | object $options)
 	{
 		$this->setOptions($options);
 	}

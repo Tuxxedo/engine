@@ -270,8 +270,11 @@ final class ConfigTest extends TestCase
 	 */
 	public function testGroups(string $readerClassName, string $input, string $mapGroup, string $mapClassName) : void
 	{
-		$map = new GroupMap;
-		$map[$mapGroup] = $mapClassName;
+		$map = new GroupMap(
+			...[
+				$mapGroup => $mapClassName
+			]
+		);
 
 		$configA = new Config(
 			$readerClassName::fromString(
@@ -298,6 +301,7 @@ final class ConfigTest extends TestCase
 
 		$this->assertNotNull($groupA->name);
 		$this->assertNotNull($groupA->version);
+		$this->assertSame($configA->getGroupMap(), $map);
 
 		$this->assertSame($groupA->name, $groupB['name']);
 		$this->assertSame($groupA->version, $groupB['version']);

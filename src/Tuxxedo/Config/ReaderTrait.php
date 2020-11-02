@@ -61,6 +61,11 @@ trait ReaderTrait
 		return $this->hasGroup($group) && isset($this->groupMap[$group]);
 	}
 
+	public function getGroupMap() : ?GroupMap
+	{
+		return $this->groupMap;
+	}
+
 	public function hasGroup(string $group) : bool
 	{
 		return isset($this->groups[$group]);

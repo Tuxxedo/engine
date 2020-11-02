@@ -20,6 +20,8 @@ interface ReaderInterface
 {
 	public function isGroupMapped(string $group) : bool;
 
+	public function getGroupMap() : ?GroupMap;
+
 	public function hasGroup(string $group) : bool;
 
 	public function hasValue(string $directive) : bool;

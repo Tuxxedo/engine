@@ -85,6 +85,11 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->isGroupMapped($group);
 	}
 
+	public function getGroupMap() : ?GroupMap
+	{
+		return $this->reader->getGroupMap();
+	}
+
 	/**
 	 * @throws AssertionException
 	 */

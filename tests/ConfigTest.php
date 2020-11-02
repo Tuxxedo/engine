@@ -254,14 +254,14 @@ final class ConfigTest extends TestCase
 			Ini::class,
 			"[app]\nname = 'Demo 1'\nversion = 1",
 			'app',
-			AppConfig::class
+			AppConfigTest::class
 		];
 
 		yield [
 			Json::class,
 			'{"app":{"name": "Demo 1", "version": 1}}',
 			'app',
-			AppConfig::class
+			AppConfigTest::class
 		];
 	}
 
@@ -308,7 +308,7 @@ final class ConfigTest extends TestCase
 	}
 }
 
-class AppConfig
+class AppConfigTest
 {
 	public ?string $name = null;
 	public ?int $version = null;

@@ -69,7 +69,7 @@ trait ReaderTrait
 
 	public function hasValueInGroup(string $group, string $directive) : bool
 	{
-		return $this->hasGroup($group) && (isset($this->groups[$group]->{$directive}) || isset($this->groups[$group][$directive]));
+		return $this->hasGroup($group) && isset($this->groups[$group]->{$directive});
 	}
 
 	public function group(string $group) : object
@@ -117,10 +117,6 @@ trait ReaderTrait
 			)
 		);
 
-		if (isset($this->groups[$group]->{$directive})) {
-			return $this->groups[$group]->{$directive};
-		}
-
-		return $this->groups[$group][$directive];
+		return $this->groups[$group]->{$directive};
 	}
 }

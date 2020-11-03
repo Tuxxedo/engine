@@ -242,10 +242,10 @@ final class ConfigTest extends TestCase
 
 		$group = $config->getGroup('app');
 
-		$this->assertIsArray($group);
-		$this->assertTrue(isset($group['name']));
+		$this->assertIsObject($group);
+		$this->assertTrue(isset($group->name));
 
-		$this->assertSame((int) \substr($group['name'], 4), $group['version']);
+		$this->assertSame((int) \substr($group->name, 4), $group->version);
 	}
 
 	public function configGroupsDataProvider() : \Generator
@@ -294,7 +294,7 @@ final class ConfigTest extends TestCase
 		$this->assertInstanceOf($mapClassName, $configA->getGroup($mapGroup));
 
 		$this->assertTrue($configB->hasGroup($mapGroup));
-		$this->assertIsArray($configB->getGroup($mapGroup));
+		$this->assertIsObject($configB->getGroup($mapGroup));
 
 		$groupA = $configA->getGroup($mapGroup);
 		$groupB = $configB->getGroup($mapGroup);
@@ -303,8 +303,8 @@ final class ConfigTest extends TestCase
 		$this->assertNotNull($groupA->version);
 		$this->assertSame($configA->getGroupMap(), $map);
 
-		$this->assertSame($groupA->name, $groupB['name']);
-		$this->assertSame($groupA->version, $groupB['version']);
+		$this->assertSame($groupA->name, $groupB->name);
+		$this->assertSame($groupA->version, $groupB->version);
 	}
 }
 

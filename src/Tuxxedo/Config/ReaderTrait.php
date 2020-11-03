@@ -18,7 +18,7 @@ use Tuxxedo\AssertionException;
 
 /**
  * @property GroupMap $groupMap
- * @property array<string, array<string, mixed>> $groups
+ * @property array<string, object> $groups
  * @property array<string, mixed> $values
  */
 trait ReaderTrait
@@ -36,22 +36,13 @@ trait ReaderTrait
 
 			if (isset($this->groupMap[$group])) {
 				$this->groups[$group] = new $this->groupMap[$group];
-
-				foreach ($values as $name => $value) {
-					assert(\property_exists($this->groups[$group], $name));
-
-					$this->groups[$group]->{$name} = $value;
-					$this->values[$group . '.' . $name] = $this->groups[$group]->{$name};
-				}
-
-				continue;
+			} else {
+				$this->groups[$group] = new \stdClass;
 			}
 
-			$this->groups[$group] = [];
-
 			foreach ($values as $name => $value) {
-				$this->groups[$group][$name] = $value;
-				$this->values[$group . '.' . $name] = $this->groups[$group][$name];
+				$this->groups[$group]->{$name} = $value;
+				$this->values[$group . '.' . $name] = $this->groups[$group]->{$name};
 			}
 		}
 	}
@@ -81,7 +72,7 @@ trait ReaderTrait
 		return $this->hasGroup($group) && (isset($this->groups[$group]->{$directive}) || isset($this->groups[$group][$directive]));
 	}
 
-	public function group(string $group) : array | object
+	public function group(string $group) : object
 	{
 		assert(
 			$this->hasGroup($group),

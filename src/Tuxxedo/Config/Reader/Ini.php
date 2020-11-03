@@ -29,7 +29,7 @@ class Ini implements ReaderInterface
 	private ?GroupMap $groupMap = null;
 
 	/**
-	 * @var array<string, array<string, mixed>|object>
+	 * @var array<string, object>
 	 */
 	private array $groups = [];
 

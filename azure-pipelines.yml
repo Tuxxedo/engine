@@ -27,5 +27,5 @@ steps:
   displayName: 'composer install'
 
 - script: |
-    php vendor/bin/phpunit tests
+    php -d zend.assertions=1 vendor/bin/phpunit tests
   displayName: 'Run tests'

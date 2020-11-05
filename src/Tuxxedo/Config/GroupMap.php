@@ -4,8 +4,8 @@
  * Tuxxedo Engine
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  *
- * @copyright        2006-2020 Kalle Sommer Nielsen <kalle@tuxxedo.app>
- * @license        MIT
+ * @copyright 	2006-2020 Kalle Sommer Nielsen <kalle@tuxxedo.app>
+ * @license 	MIT
  *
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */

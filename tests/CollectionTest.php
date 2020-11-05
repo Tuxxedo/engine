@@ -119,4 +119,38 @@ class CollectionTest extends TestCase
 
 		$test($fruits);
 	}
+
+	public function testPool() : void
+	{
+		/** @var ImmutableCollection<Pool> $pool */
+		$pool = new ImmutableCollection(
+			...[
+				Pool1::class => new Pool1('Write'),
+				Pool2::class => new Pool2('Read'),
+			],
+		);
+
+		$this->assertSame($pool->get(Pool1::class)->getName(), 'Write');
+		$this->assertSame($pool->get(Pool2::class)->getName(), 'Read');
+	}
+}
+
+abstract class Pool
+{
+	public function __construct(private string $name)
+	{
+	}
+
+	public function getName() : string
+	{
+		return $this->name;
+	}
+}
+
+class Pool1 extends Pool
+{
+}
+
+class Pool2 extends Pool
+{
 }

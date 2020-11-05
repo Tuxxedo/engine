@@ -35,6 +35,22 @@ class Collection implements \ArrayAccess, \Countable, \Iterator
 		return $this->collection;
 	}
 
+	/**
+	 * @param string $name
+	 * @return T
+	 */
+	public function get(string $name) : mixed
+	{
+		assert(isset($this->collection[$name]));
+
+		return $this->collection[$name];
+	}
+
+	public function exists(string $name) : bool
+	{
+		return isset($this->collection[$name]);
+	}
+
 	public function count() : int
 	{
 		return \sizeof($this->collection);

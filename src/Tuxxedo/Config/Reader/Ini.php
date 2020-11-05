@@ -14,10 +14,10 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config\Reader;
 
-use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Config\ReaderTrait;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\Config\ReaderInterface;
+use Tuxxedo\ImmutableCollection;
 
 class Ini implements ReaderInterface
 {
@@ -26,7 +26,10 @@ class Ini implements ReaderInterface
 		index as private;
 	}
 
-	private ?GroupMap $groupMap = null;
+	/**
+	 * @var ImmutableCollection<string>|null
+	 */
+	private ?ImmutableCollection $groupMap = null;
 
 	/**
 	 * @var array<string, object>
@@ -38,7 +41,11 @@ class Ini implements ReaderInterface
 	 */
 	private array $values = [];
 
-	private function __construct(array $config, GroupMap $groupMap = null)
+	/**
+	 * @param array $config
+	 * @param ImmutableCollection<string>|null $groupMap
+	 */
+	private function __construct(array $config, ImmutableCollection $groupMap = null)
 	{
 		$this->groupMap = $groupMap;
 
@@ -46,9 +53,12 @@ class Ini implements ReaderInterface
 	}
 
 	/**
+	 * @param string $ini
+	 * @param ImmutableCollection<string>|null $groupMap
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $ini, GroupMap $groupMap = null) : self
+	public static function fromString(string $ini, ImmutableCollection $groupMap = null) : self
 	{
 		$ini = @\parse_ini_string($ini, true, \INI_SCANNER_TYPED);
 
@@ -63,9 +73,12 @@ class Ini implements ReaderInterface
 	}
 
 	/**
+	 * @param string $iniFile
+	 * @param ImmutableCollection<string>|null $groupMap
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $iniFile, GroupMap $groupMap = null) : self
+	public static function fromFile(string $iniFile, ImmutableCollection $groupMap = null) : self
 	{
 		$iniFile = @\parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
 

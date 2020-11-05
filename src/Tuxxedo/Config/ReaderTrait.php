@@ -15,9 +15,10 @@ declare(strict_types = 1);
 namespace Tuxxedo\Config;
 
 use Tuxxedo\AssertionException;
+use Tuxxedo\ImmutableCollection;
 
 /**
- * @property GroupMap $groupMap
+ * @property ImmutableCollection<string>|null $groupMap
  * @property array<string, object> $groups
  * @property array<string, mixed> $values
  */
@@ -52,7 +53,7 @@ trait ReaderTrait
 		return $this->hasGroup($group) && isset($this->groupMap[$group]);
 	}
 
-	public function getGroupMap() : ?GroupMap
+	public function getGroupMap() : ?ImmutableCollection
 	{
 		return $this->groupMap;
 	}

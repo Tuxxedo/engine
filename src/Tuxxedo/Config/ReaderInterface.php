@@ -15,12 +15,13 @@ declare(strict_types = 1);
 namespace Tuxxedo\Config;
 
 use Tuxxedo\AssertionException;
+use Tuxxedo\ImmutableCollection;
 
 interface ReaderInterface
 {
 	public function isGroupMapped(string $group) : bool;
 
-	public function getGroupMap() : ?GroupMap;
+	public function getGroupMap() : ?ImmutableCollection;
 
 	public function hasGroup(string $group) : bool;
 

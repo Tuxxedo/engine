@@ -5,8 +5,8 @@ declare(strict_types = 1);
 use PHPUnit\Framework\TestCase;
 use Tuxxedo\Config;
 use Tuxxedo\Config\Reader\Json;
-use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Di;
+use Tuxxedo\ImmutableCollection;
 use Tuxxedo\Version;
 
 final class DiTest extends TestCase
@@ -19,7 +19,7 @@ final class DiTest extends TestCase
 				return new Config(
 					Json::fromString(
 						'{"app":{"name": "Demo", "version": 2}}',
-						new GroupMap(
+						new ImmutableCollection(
 							app: AppDiTest::class
 						)
 					)

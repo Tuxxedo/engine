@@ -15,15 +15,18 @@ declare(strict_types = 1);
 namespace Tuxxedo\Config;
 
 use Tuxxedo\Design\Immutable;
+use Tuxxedo\ImmutableCollection;
 use Tuxxedo\ImmutableException;
 
 class GroupMap implements \ArrayAccess, Immutable
 {
-	private $classMap = [];
+	private ImmutableCollection $classMap;
 
 	public function __construct(string ...$aliases)
 	{
-		$this->classMap = $aliases;
+		$this->classMap = new ImmutableCollection(
+			...$aliases
+		);
 	}
 
 	public function offsetExists(mixed $alias) : bool
@@ -33,8 +36,6 @@ class GroupMap implements \ArrayAccess, Immutable
 
 	public function offsetGet(mixed $alias) : mixed
 	{
-		assert(isset($this->classMap[$alias]));
-
 		return $this->classMap[$alias];
 	}
 

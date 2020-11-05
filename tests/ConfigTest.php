@@ -7,8 +7,8 @@ use Tuxxedo\AssertionException;
 use Tuxxedo\Config;
 use Tuxxedo\Config\Reader\Ini;
 use Tuxxedo\Config\Reader\Json;
-use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Config\ReaderException;
+use Tuxxedo\ImmutableCollection;
 use Tuxxedo\ImmutableException;
 
 final class ConfigTest extends TestCase
@@ -270,7 +270,7 @@ final class ConfigTest extends TestCase
 	 */
 	public function testGroups(string $readerClassName, string $input, string $mapGroup, string $mapClassName) : void
 	{
-		$map = new GroupMap(
+		$map = new ImmutableCollection(
 			...[
 				$mapGroup => $mapClassName
 			]

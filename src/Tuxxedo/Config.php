@@ -14,7 +14,6 @@ declare(strict_types = 1);
 
 namespace Tuxxedo;
 
-use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Config\ReaderInterface;
 use Tuxxedo\Design\Immutable;
 
@@ -85,7 +84,7 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->isGroupMapped($group);
 	}
 
-	public function getGroupMap() : ?GroupMap
+	public function getGroupMap() : ?ImmutableCollection
 	{
 		return $this->reader->getGroupMap();
 	}

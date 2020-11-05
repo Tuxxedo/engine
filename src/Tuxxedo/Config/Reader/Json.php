@@ -14,10 +14,10 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config\Reader;
 
-use Tuxxedo\Config\GroupMap;
 use Tuxxedo\Config\ReaderTrait;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\Config\ReaderInterface;
+use Tuxxedo\ImmutableCollection;
 
 class Json implements ReaderInterface
 {
@@ -26,7 +26,10 @@ class Json implements ReaderInterface
 		index as private;
 	}
 
-	private ?GroupMap $groupMap = null;
+	/**
+	 * @var ImmutableCollection<string>|null
+	 */
+	private ?ImmutableCollection $groupMap = null;
 
 	/**
 	 * @var array<string, object>
@@ -38,7 +41,11 @@ class Json implements ReaderInterface
 	 */
 	private array $values = [];
 
-	private function __construct(array $config, GroupMap $groupMap = null)
+	/**
+	 * @param array $config
+	 * @param ImmutableCollection<string>|null $groupMap
+	 */
+	private function __construct(array $config, ImmutableCollection $groupMap = null)
 	{
 		$this->groupMap = $groupMap;
 
@@ -46,9 +53,13 @@ class Json implements ReaderInterface
 	}
 
 	/**
+	 * @param string $json
+	 * @param ImmutableCollection<string>|null $groupMap
+	 * @return self
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $json, GroupMap $groupMap = null, int $depth = 512) : self
+	public static function fromString(string $json, ImmutableCollection $groupMap = null, int $depth = 512) : self
 	{
 		try {
 			$json = \json_decode($json, true, $depth, \JSON_THROW_ON_ERROR);
@@ -63,9 +74,13 @@ class Json implements ReaderInterface
 	}
 
 	/**
+	 * @param string $jsonFile
+	 * @param ImmutableCollection<string>|null $groupMap
+	 * @return self
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $jsonFile, GroupMap $groupMap = null, int $depth = 512) : self
+	public static function fromFile(string $jsonFile, ImmutableCollection $groupMap = null, int $depth = 512) : self
 	{
 		$jsonFile = @\file_get_contents($jsonFile);
 

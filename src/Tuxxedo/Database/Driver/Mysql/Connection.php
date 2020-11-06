@@ -142,7 +142,14 @@ class Connection implements ConnectionInterface
 	 */
 	public function prepare(string $sql) : StatementInterface
 	{
-		// @todo -- Needs unified syntax for other DBRMS
+		/**
+		 * @todo This needs to account for converting the syntax from a Tuxxedo-style one
+		 *       into a more native one for mysqli to make other DBRMS system compatible
+		 */
+		return new Statement(
+			$this,
+			$sql,
+		);
 	}
 
 	/**
@@ -157,17 +164,17 @@ class Connection implements ConnectionInterface
 		$link = $this->getInternalLink();
 		$stmt = $link->prepare($sql);
 
-		if ($stmt === false || !$stmt->execute()) {
+		if (!$stmt || !$stmt->execute()) {
 			throw new QueryException(
 				$link->errno,
 				$link->error,
-				$sql
+				$sql,
 			);
 		}
 
 		return new Result(
 			$this,
-			$stmt
+			$stmt,
 		);
 	}
 }

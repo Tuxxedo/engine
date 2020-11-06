@@ -20,8 +20,7 @@ use Tuxxedo\Database\ResultRow;
 
 class Result implements ResultInterface
 {
-	private ConnectionInterface $link;
-	private \mysqli_result | bool $result = true;
+	private ?\mysqli_result $result = null;
 
 	private int $iteratorPosition = 0;
 	private int $affectedRows = 0;
@@ -33,14 +32,16 @@ class Result implements ResultInterface
 	public function __construct(ConnectionInterface $link, mixed $stmt)
 	{
 		assert($link->isConnected());
-		assert($stmt instanceof \mysqli_stmt || $stmt === true);
+		assert($link instanceof Connection);
+		assert($stmt instanceof \mysqli_stmt);
 
-		$this->link = $link;
 		$this->affectedRows = $stmt->affected_rows;
 
 		if ($result = $stmt->get_result()) {
 			$this->result = $result;
 		}
+
+		assert($stmt->close());
 	}
 
 	public function getAffectedRows() : int
@@ -50,7 +51,7 @@ class Result implements ResultInterface
 
 	public function rewind() : void
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
 		$this->result->data_seek(0);
@@ -58,28 +59,28 @@ class Result implements ResultInterface
 
 	public function valid() : bool
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 
 		return $this->iteratorPosition < $this->result->num_rows;
 	}
 
 	public function next() : void
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 
 		$this->iteratorPosition++;
 	}
 
 	public function key() : int
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 
 		return $this->iteratorPosition;
 	}
 
 	public function current() : mixed
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 
 		$this->result->data_seek(
 			$this->iteratorPosition
@@ -90,7 +91,7 @@ class Result implements ResultInterface
 
 	public function count() : int
 	{
-		if ($this->result === true) {
+		if ($this->result === null) {
 			return 0;
 		}
 
@@ -112,7 +113,7 @@ class Result implements ResultInterface
 	 */
 	public function fetchArray() : array
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
 		return $this->result->fetch_array(
@@ -125,7 +126,7 @@ class Result implements ResultInterface
 	 */
 	public function fetchAssoc() : array
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
 		return $this->result->fetch_assoc();
@@ -133,7 +134,7 @@ class Result implements ResultInterface
 
 	public function fetchObject(string $className, array $parameters = null) : object
 	{
-		assert($this->result instanceof \mysqli_result);
+		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
 		if ($parameters !== null) {

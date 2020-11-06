@@ -137,7 +137,6 @@ class Connection implements ConnectionInterface
 	 * @param string $sql
 	 * @return Statement
 	 *
-	 * @throws ConnectionException
 	 * @throws QueryException
 	 */
 	public function prepare(string $sql) : StatementInterface

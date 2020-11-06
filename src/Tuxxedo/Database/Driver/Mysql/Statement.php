@@ -18,7 +18,6 @@ use Tuxxedo\Database\ConnectionInterface;
 use Tuxxedo\Database\QueryException;
 use Tuxxedo\Database\ResultInterface;
 use Tuxxedo\Database\StatementInterface;
-use Tuxxedo\Exception;
 
 class Statement implements StatementInterface
 {
@@ -72,9 +71,11 @@ class Statement implements StatementInterface
 		 * @todo This needs to handle multiple resultsets returned
 		 */
 		if (!$stmt->execute()) {
+			$link = $this->link->getLink();
+
 			throw new QueryException(
-				$this->link->errno,
-				$this->link->error,
+				$link->errno,
+				$link->error,
 				$this->sql,
 			);
 		}

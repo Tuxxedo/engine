@@ -59,10 +59,10 @@ class Json implements ReaderInterface
 	 *
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $json, ImmutableCollection $groupMap = null, int $depth = 512) : self
+	public static function fromString(string $json, ImmutableCollection $groupMap = null) : self
 	{
 		try {
-			$json = \json_decode($json, true, $depth, \JSON_THROW_ON_ERROR);
+			$json = \json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
 			throw new ReaderException($e->getMessage());
 		}

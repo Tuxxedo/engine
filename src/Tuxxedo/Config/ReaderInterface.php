@@ -19,6 +19,10 @@ use Tuxxedo\ImmutableCollection;
 
 interface ReaderInterface
 {
+	public static function fromString(string $string, ImmutableCollection $groupMap = null) : self;
+
+	public static function fromFile(string $file, ImmutableCollection $groupMap = null) : self;
+
 	public function isGroupMapped(string $group) : bool;
 
 	public function getGroupMap() : ?ImmutableCollection;

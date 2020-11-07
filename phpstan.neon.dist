@@ -1,6 +1,5 @@
 parameters:
     level: max
-    checkMissingIterableValueType: false
     reportUnmatchedIgnoredErrors: false
     tipsOfTheDay: false
     checkTooWideReturnTypesInProtectedAndPublicMethods: true

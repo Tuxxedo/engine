@@ -86,6 +86,13 @@ class NamedStatementSyntax
 			static function(array $matches) use($flavor, $newBindings, $bindings) : string {
 				static $n = 0;
 
+				if (!isset($bindings[$matches[1]])) {
+					throw new Exception(
+						'Named statement variable (%s) found, but not bound',
+						$matches[1]
+					);
+				}
+
 				$rules = self::$flavorRules[$flavor];
 
 				if ($rules[self::RULE_TYPES]) {
@@ -111,7 +118,7 @@ class NamedStatementSyntax
 		$this->bindings = $newBindings;
 	}
 
-	protected function getTypeModifier(string $flavor, string $phpType) : string
+	protected static function getTypeModifier(string $flavor, string $phpType) : string
 	{
 		assert($flavor === self::FLAVOR_MYSQL);
 

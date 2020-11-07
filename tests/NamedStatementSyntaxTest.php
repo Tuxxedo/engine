@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Tuxxedo\Database\NamedStatementSyntax;
+use Tuxxedo\Exception;
 
 class NamedStatementSyntaxTest extends TestCase
 {
@@ -96,5 +97,30 @@ class NamedStatementSyntaxTest extends TestCase
 			$this->assertTrue(isset($expectedBindings[$varname]));
 			$this->assertSame($value, $expectedBindings[$varname]);
 		}
+	}
+
+	public function flavorDataProvider() : \Generator
+	{
+		yield [
+			NamedStatementSyntax::FLAVOR_MYSQL,
+		];
+
+		yield [
+			NamedStatementSyntax::FLAVOR_PGSQL,
+		];
+	}
+
+	/**
+	 * @dataProvider flavorDataProvider
+	 */
+	public function testErrorBinding(string $flavor) : string
+	{
+		$this->expectException(Exception::class);
+
+		new NamedStatementSyntax(
+			$flavor,
+			'SELECT * FROM `orders` WHERE `id` = :orderId:',
+			[]
+		);
 	}
 }

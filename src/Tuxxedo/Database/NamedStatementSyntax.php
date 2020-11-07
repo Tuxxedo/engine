@@ -19,11 +19,11 @@ class NamedStatementSyntax
 	public const FLAVOR_MYSQL = 'mysql';
 	public const FLAVOR_PGSQL = 'pgsql';
 
-	protected const RULE_MODIFIER  = 'replacementModifier';
-	protected const RULE_NUMERIC = 'numericModifier';
-	protected const RULE_TYPES = 'bindingTypes';
+	public const RULE_MODIFIER  = 'replacementModifier';
+	public const RULE_NUMERIC = 'numericModifier';
+	public const RULE_TYPES = 'bindingTypes';
 
-	protected static array $flavorRules = [
+	private static array $flavorRules = [
 		self::FLAVOR_MYSQL => [
 			self::RULE_MODIFIER => '?',
 			self::RULE_NUMERIC => false,
@@ -62,66 +62,52 @@ class NamedStatementSyntax
 		return isset(self::$flavorRules[$flavor]);
 	}
 
+	public static function getFlavorRule(string $flavor, string $rule) : mixed
+	{
+		assert(self::isSupportedFlavor($flavor));
+		assert(isset(self::$flavorRules[$flavor][$rule]));
+
+		return self::$flavorRules[$flavor][$rule];
+	}
+
+	public static function getFlavorRules(string $flavor) : array
+	{
+		assert(self::isSupportedFlavor($flavor));
+
+		return self::$flavorRules[$flavor];
+	}
+
 	protected function parse(string $flavor, string $sql, array $bindings) : void
 	{
-		\preg_match_all(
-			'/:([^:]+):/',
-			$sql,
-			$matches,
-			\PREG_OFFSET_CAPTURE,
-		);
-
-		$replacementOffset = 1;
 		$newBindings = [];
-		$usesTypes = self::$flavorRules[$flavor][self::RULE_TYPES];
-		$usesNumeric = self::$flavorRules[$flavor][self::RULE_NUMERIC];
-		$replacementModifier = self::$flavorRules[$flavor][self::RULE_MODIFIER];
 
-		foreach ($matches[1] as $index => [$varname, $offset]) {
-			if (!isset($bindings[$varname])) {
-				// @todo Should maybe be a different exception
-				throw new Exception(
-					'Named statement variable (%s) found, but not bound',
-					$varname
-				);
-			}
+		$this->sql = (string) \preg_replace_callback(
+			'/:([^:]+):/',
+			static function(array $matches) use($flavor, $newBindings, $bindings) : string {
+				static $n = 0;
 
-			if ($usesTypes) {
-				$newBindings[$varname] = [
-					$bindings[$varname],
-					self::getTypeModifier(
-						$flavor,
-						\gettype($bindings[$varname])
-					),
-				];
-			} else {
-				$newBindings[$varname] = $bindings[$varname];
-			}
+				$rules = self::$flavorRules[$flavor];
 
-			$varnameLength = \strlen($varname);
+				if ($rules[self::RULE_TYPES]) {
+					$newBindings[$matches[1]] = [
+						$bindings[$matches[1]],
+						self::getTypeModifier(
+							$flavor,
+							\gettype($bindings[$matches[1]])
+						)
+					];
+				} else {
+					$newBindings[$matches[1]] = $bindings[$matches[1]];
+				}
 
-			if ($usesNumeric) {
-				$sql = \substr_replace(
-					$sql,
-					$replacementModifier . $index,
-					$offset - $replacementOffset + ($index ? 1 : 0),
-					$varnameLength + 2,
-				);
+				if ($rules[self::RULE_NUMERIC]) {
+					return $rules[self::RULE_MODIFIER] . $n++;
+				}
 
-				$replacementOffset += $varnameLength + 1  + ($index ? 1 : 0);
-			} else {
-				$sql = \substr_replace(
-					$sql,
-					$replacementModifier,
-					$offset - $replacementOffset,
-					$varnameLength + 2,
-				);
-
-				$replacementOffset += $varnameLength + 1;
-			}
-		}
-
-		$this->sql = $sql;
+				return $rules[self::RULE_MODIFIER];
+			},
+			$sql,
+		);
 		$this->bindings = $newBindings;
 	}
 

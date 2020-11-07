@@ -47,7 +47,7 @@ class Statement implements StatementInterface
 		$this->bindings[$varname] = $value;
 	}
 
-	public function bind(string | int | float ...$values): void
+	public function bind(string | int | float ...$values) : void
 	{
 		foreach ($values as $varname => $value) {
 			assert(!$this->isExecuted || !isset($this->bindings[$varname]));

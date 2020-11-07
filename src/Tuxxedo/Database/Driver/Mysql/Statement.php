@@ -57,9 +57,6 @@ class Statement implements StatementInterface
 			);
 		}
 
-		/**
-		 * @todo This needs to account for the key ($var) once there is a neutral syntax
-		 */
 		foreach ($this->bindings as $value) {
 			$stmt->bind_param(
 				self::getParameterModifier($value),
@@ -67,9 +64,6 @@ class Statement implements StatementInterface
 			);
 		}
 
-		/**
-		 * @todo This needs to handle multiple resultsets returned
-		 */
 		if (!$stmt->execute()) {
 			$link = $this->link->getLink();
 

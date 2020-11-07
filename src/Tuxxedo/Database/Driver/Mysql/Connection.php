@@ -141,10 +141,6 @@ class Connection implements ConnectionInterface
 	 */
 	public function prepare(string $sql) : StatementInterface
 	{
-		/**
-		 * @todo This needs to account for converting the syntax from a Tuxxedo-style one
-		 *       into a more native one for mysqli to make other DBRMS system compatible
-		 */
 		return new Statement(
 			$this,
 			$sql,

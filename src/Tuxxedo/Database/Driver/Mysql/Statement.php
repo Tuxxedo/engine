@@ -24,6 +24,8 @@ class Statement implements StatementInterface
 	private string $sql;
 	private Connection $link;
 
+	private bool $isExecuted = false;
+
 	/**
 	 * @var array<string, string | float | int>
 	 */
@@ -38,9 +40,16 @@ class Statement implements StatementInterface
 		$this->sql = $sql;
 	}
 
-	public function bind(string $var, string | float | int $value) : void
+	public function bindOne(string $varname, string | float | int $value) : void
 	{
-		$this->bindings[$var] = $value;
+		assert(!$this->isExecuted || !isset($this->bindings[$varname]));
+
+		$this->bindings[$varname] = $value;
+	}
+
+	public function bind(string | int | float ...$values): void
+	{
+		$this->bindings = \array_merge($this->bindings, $values);
 	}
 
 	public function execute() : ResultInterface
@@ -73,6 +82,8 @@ class Statement implements StatementInterface
 				$this->sql,
 			);
 		}
+
+		assert($this->isExecuted = true);
 
 		return new Result(
 			$this->link,

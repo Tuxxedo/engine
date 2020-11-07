@@ -18,10 +18,9 @@ interface StatementInterface
 {
 	public function __construct(ConnectionInterface $link, string $sql);
 
-	public function bind(string $var, string | int | float $value) : void;
+	public function bindOne(string $var, string | int | float $value) : void;
 
-	/**
-	 * @todo Needs to account for ResultSet?
-	 */
+	public function bind(string | int | float ...$values) : void;
+
 	public function execute() : ResultInterface;
 }

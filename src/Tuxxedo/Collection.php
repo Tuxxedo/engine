@@ -14,11 +14,13 @@ namespace Tuxxedo;
 
 /**
  * @template T
+ * @implements \ArrayAccess<string, T>
+ * @implements \Iterator<string, T>
  */
 class Collection implements \ArrayAccess, \Countable, \Iterator
 {
 	/**
-	 * @var array<string, T>
+	 * @var array<string | int, T>
 	 */
 	protected array $collection = [];
 
@@ -94,7 +96,7 @@ class Collection implements \ArrayAccess, \Countable, \Iterator
 
 	public function key() : string
 	{
-		return \key($this->collection);
+		return (string) \key($this->collection);
 	}
 
 	public function valid() : bool

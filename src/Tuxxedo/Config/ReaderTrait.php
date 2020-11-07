@@ -25,7 +25,7 @@ use Tuxxedo\ImmutableCollection;
 trait ReaderTrait
 {
 	/**
-	 * @param array<string, array<string, mixed>>
+	 * @param array<string, array<string, mixed>> $config
 	 * @return void
 	 */
 	public function index(array $config) : void

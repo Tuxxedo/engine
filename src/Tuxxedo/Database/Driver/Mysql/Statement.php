@@ -49,8 +49,10 @@ class Statement implements StatementInterface
 
 	public function bind(string | int | float ...$values) : void
 	{
+		/** @var string $varname */
 		foreach ($values as $varname => $value) {
-			assert(!$this->isExecuted || !isset($this->bindings[$varname]));
+			assert(!$this->isExecuted && !isset($this->bindings[$varname]));
+			assert(\is_string($varname));
 
 			$this->bindings[$varname] = $value;
 		}
@@ -58,11 +60,13 @@ class Statement implements StatementInterface
 
 	public function execute() : ResultInterface
 	{
-		$stmt = $this->link->getLink()->prepare($this->sql);
+		$link = $this->link->getLink();
+
+		assert($link !== null);
+
+		$stmt = $link->prepare($this->sql);
 
 		if (!$stmt) {
-			$link = $this->link->getLink();
-
 			throw new QueryException(
 				$link->errno,
 				$link->error,
@@ -78,8 +82,6 @@ class Statement implements StatementInterface
 		}
 
 		if (!$stmt->execute()) {
-			$link = $this->link->getLink();
-
 			throw new QueryException(
 				$link->errno,
 				$link->error,

@@ -38,13 +38,16 @@ interface ConnectionInterface
 	public function getOption(string $name) : mixed;
 
 	/**
-	 * @param array<string, mixed> $options
+	 * @param array<string, mixed>|iterable<object> $options
 	 * @return void
 	 *
 	 * @throws AssertionException
 	 */
-	public function setOptions(array $options) : void;
+	public function setOptions(array | object $options) : void;
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function getOptions() : array;
 
 	public function getLink() : mixed;

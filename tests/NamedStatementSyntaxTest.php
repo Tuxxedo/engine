@@ -113,7 +113,7 @@ class NamedStatementSyntaxTest extends TestCase
 	/**
 	 * @dataProvider flavorDataProvider
 	 */
-	public function testErrorBinding(string $flavor) : string
+	public function testErrorBinding(string $flavor) : void
 	{
 		$this->expectException(Exception::class);
 

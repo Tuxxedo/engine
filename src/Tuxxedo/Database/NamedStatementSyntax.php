@@ -12,6 +12,7 @@
 
 namespace Tuxxedo\Database;
 
+use Tuxxedo\Database\Driver\Mysql;
 use Tuxxedo\Exception;
 
 class NamedStatementSyntax
@@ -23,6 +24,9 @@ class NamedStatementSyntax
 	public const RULE_NUMERIC = 'numericModifier';
 	public const RULE_TYPES = 'bindingTypes';
 
+	/**
+	 * @var array<string, array<string, string | bool>>
+	 */
 	private static array $flavorRules = [
 		self::FLAVOR_MYSQL => [
 			self::RULE_MODIFIER => '?',
@@ -44,6 +48,9 @@ class NamedStatementSyntax
 	 */
 	private array $bindings;
 
+	/**
+	 * @param array<string, string | float | int> $bindings
+	 */
 	public function __construct(string $flavor, string $sql, array $bindings)
 	{
 		assert(self::isSupportedFlavor($flavor));
@@ -70,6 +77,9 @@ class NamedStatementSyntax
 		return self::$flavorRules[$flavor][$rule];
 	}
 
+	/**
+	 * @return array<string, string | bool>
+	 */
 	public static function getFlavorRules(string $flavor) : array
 	{
 		assert(self::isSupportedFlavor($flavor));
@@ -77,6 +87,17 @@ class NamedStatementSyntax
 		return self::$flavorRules[$flavor];
 	}
 
+	public static function getDeterminedFlavor(ConnectionInterface $connection) : ?string
+	{
+		return match($connection::class) {
+			Mysql\Connection::class => self::FLAVOR_MYSQL,
+			default => null,
+		};
+	}
+
+	/**
+	 * @param array<string, string | float | int> $bindings
+	 */
 	protected function parse(string $flavor, string $sql, array $bindings) : void
 	{
 		$newBindings = [];
@@ -111,7 +132,7 @@ class NamedStatementSyntax
 					return $rules[self::RULE_MODIFIER] . $n++;
 				}
 
-				return $rules[self::RULE_MODIFIER];
+				return (string) $rules[self::RULE_MODIFIER];
 			},
 			$sql,
 		);

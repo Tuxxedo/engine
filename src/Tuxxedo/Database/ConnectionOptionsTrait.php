@@ -59,7 +59,7 @@ trait ConnectionOptionsTrait
 	}
 
 	/**
-	 * @param array<string, mixed>|object $options
+	 * @param array<string, mixed>|iterable<object> $options
 	 *
 	 * @throws AssertionException
 	 */

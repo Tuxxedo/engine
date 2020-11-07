@@ -21,7 +21,8 @@
   },
   "require-dev": {
     "ext-mbstring": "*",
-    "phpunit/phpunit": "^9.4"
+    "phpunit/phpunit": "^9.4",
+    "phpstan/phpstan": "^0.12"
   },
   "autoload": {
     "classmap": [

@@ -22,5 +22,8 @@ interface StatementInterface
 
 	public function bind(string | int | float ...$values) : void;
 
+	/**
+	 * @return ResultInterface<object>
+	 */
 	public function execute() : ResultInterface;
 }

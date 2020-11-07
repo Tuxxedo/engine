@@ -52,6 +52,9 @@ class Connection implements ConnectionInterface
 		self::OPTION_SSL => false,
 	];
 
+	/**
+	 * @param array<string, mixed>|iterable<object> $options
+	 */
 	public function __construct(array | object $options)
 	{
 		$this->setOptions($options);
@@ -122,7 +125,7 @@ class Connection implements ConnectionInterface
 	 */
 	public function getInsertId() : int
 	{
-		return $this->getInternalLink()->insert_id;
+		return (int) $this->getInternalLink()->insert_id;
 	}
 
 	/**

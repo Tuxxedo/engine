@@ -24,4 +24,8 @@ steps:
 
 - script: |
     php -d zend.assertions=1 vendor/bin/phpunit tests
-  displayName: 'Run tests'
+  displayName: 'Run phpunit'
+
+- script: |
+    vendor/bin/phpstan --level=max analyze src
+  displayName: 'Run phpstan'

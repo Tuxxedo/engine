@@ -42,7 +42,7 @@ class Ini implements ReaderInterface
 	private array $values = [];
 
 	/**
-	 * @param array $config
+	 * @param array<string, array<string, mixed>> $config
 	 * @param ImmutableCollection<string>|null $groupMap
 	 */
 	private function __construct(array $config, ImmutableCollection $groupMap = null)

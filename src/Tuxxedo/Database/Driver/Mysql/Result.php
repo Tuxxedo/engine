@@ -20,6 +20,9 @@ use Tuxxedo\Database\ResultRow;
 
 class Result implements ResultInterface
 {
+	/**
+	 * @var \mysqli_result<mixed>
+	 */
 	private ?\mysqli_result $result = null;
 
 	private int $iteratorPosition = 0;
@@ -27,7 +30,7 @@ class Result implements ResultInterface
 
 	/**
 	 * @param Connection $link
-	 * @param \mysqli_stmt|true $result
+	 * @param \mysqli_stmt $stmt
 	 */
 	public function __construct(ConnectionInterface $link, mixed $stmt)
 	{
@@ -78,6 +81,9 @@ class Result implements ResultInterface
 		return $this->iteratorPosition;
 	}
 
+	/**
+	 * @return object|null
+	 */
 	public function current() : mixed
 	{
 		assert($this->result !== null);
@@ -99,53 +105,47 @@ class Result implements ResultInterface
 	}
 
 	/**
-	 * @return ResultRow
+	 * @return object|null
 	 */
-	public function fetch() : object
+	public function fetch() : ?object
 	{
-		return $this->fetchObject(
-			ResultRow::class
-		);
+		return $this->fetchObject(ResultRow::class);
 	}
 
 	/**
-	 * @return array<int, mixed>
+	 * @return array<mixed>|null
 	 */
-	public function fetchArray() : array
+	public function fetchArray() : ?array
 	{
 		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
-		return $this->result->fetch_array(
-			\MYSQLI_NUM
-		);
+		return $this->result->fetch_array(\MYSQLI_NUM) ?: null;
 	}
 
 	/**
-	 * @return array<string, mixed>
+	 * @return array<string, mixed>|null
 	 */
-	public function fetchAssoc() : array
+	public function fetchAssoc() : ?array
 	{
 		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
-		return $this->result->fetch_assoc();
+		return $this->result->fetch_assoc() ?: null;
 	}
 
-	public function fetchObject(string $className, array $parameters = null) : object
+	/**
+	 * @return object|null
+	 */
+	public function fetchObject(string $className, array $parameters = null) : ?object
 	{
 		assert($this->result !== null);
 		assert($this->result->num_rows > 0);
 
 		if ($parameters !== null) {
-			return $this->result->fetch_object(
-				$className,
-				$parameters
-			);
+			return $this->result->fetch_object($className, $parameters) ?: null;
 		}
 
-		return $this->result->fetch_object(
-			$className
-		);
+		return $this->result->fetch_object($className ) ?: null;
 	}
 }

@@ -16,7 +16,7 @@ use Tuxxedo\Design\Immutable;
 
 /**
  * @template T
- * @extends T
+ * @extends Collection<T>
  */
 class ImmutableCollection extends Collection implements Immutable
 {

@@ -17,6 +17,9 @@ namespace Tuxxedo;
 use Tuxxedo\Config\ReaderInterface;
 use Tuxxedo\Design\Immutable;
 
+/**
+ * @implements  \ArrayAccess<string, mixed>
+ */
 class Config implements \ArrayAccess, Immutable
 {
 	protected ReaderInterface $reader;
@@ -84,6 +87,9 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->isGroupMapped($group);
 	}
 
+	/**
+	 * @return ImmutableCollection<string>|null
+	 */
 	public function getGroupMap() : ?ImmutableCollection
 	{
 		return $this->reader->getGroupMap();

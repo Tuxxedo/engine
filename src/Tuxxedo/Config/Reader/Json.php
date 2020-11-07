@@ -42,7 +42,7 @@ class Json implements ReaderInterface
 	private array $values = [];
 
 	/**
-	 * @param array $config
+	 * @param array<string, array<string, mixed>> $config
 	 * @param ImmutableCollection<string>|null $groupMap
 	 */
 	private function __construct(array $config, ImmutableCollection $groupMap = null)
@@ -80,7 +80,7 @@ class Json implements ReaderInterface
 	 *
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $jsonFile, ImmutableCollection $groupMap = null, int $depth = 512) : self
+	public static function fromFile(string $jsonFile, ImmutableCollection $groupMap = null) : self
 	{
 		$jsonFile = @\file_get_contents($jsonFile);
 
@@ -91,7 +91,6 @@ class Json implements ReaderInterface
 		return self::fromString(
 			$jsonFile,
 			$groupMap,
-			$depth
 		);
 	}
 }

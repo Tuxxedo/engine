@@ -49,7 +49,11 @@ class Statement implements StatementInterface
 
 	public function bind(string | int | float ...$values): void
 	{
-		$this->bindings = \array_merge($this->bindings, $values);
+		foreach ($values as $varname => $value) {
+			assert(!$this->isExecuted || !isset($this->bindings[$varname]));
+
+			$this->bindings[$varname] = $value;
+		}
 	}
 
 	public function execute() : ResultInterface

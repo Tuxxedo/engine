@@ -1,0 +1,6 @@
+parameters:
+    level: max
+    tipsOfTheDay: false
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    paths:
+        - src

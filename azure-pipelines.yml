@@ -27,5 +27,5 @@ steps:
   displayName: 'Run phpunit'
 
 - script: |
-    vendor/bin/phpstan --level=max analyze src
+    vendor/bin/phpstan analyze
   displayName: 'Run phpstan'

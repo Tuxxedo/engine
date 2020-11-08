@@ -14,7 +14,6 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config;
 
-use Tuxxedo\AssertionException;
 use Tuxxedo\ImmutableCollection;
 
 /**
@@ -75,48 +74,22 @@ trait ReaderTrait
 
 	public function group(string $group) : object
 	{
-		assert(
-			$this->hasGroup($group),
-			new AssertionException(
-				'Invalid group: `%s`',
-				$group,
-			)
-		);
+		assert($this->hasGroup($group));
 
 		return $this->groups[$group];
 	}
 
 	public function value(string $directive) : mixed
 	{
-		assert(
-			$this->hasValue($directive),
-			new AssertionException(
-				'Invalid directive: `%s`',
-				$directive,
-			)
-		);
+		assert($this->hasValue($directive));
 
 		return $this->values[$directive];
 	}
 
 	public function valueFromGroup(string $group, string $directive) : mixed
 	{
-		assert(
-			$this->hasGroup($group),
-			new AssertionException(
-				'Invalid group: `%s`',
-				$group,
-			)
-		);
-
-		assert(
-			$this->hasValueInGroup($group, $directive),
-			new AssertionException(
-				'Invalid direction: `%s` in group `%s`',
-				$directive,
-				$group,
-			)
-		);
+		assert($this->hasGroup($group));
+		assert($this->hasValueInGroup($group, $directive));
 
 		return $this->groups[$group]->{$directive};
 	}

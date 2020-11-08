@@ -39,26 +39,14 @@ class Di
 
 	public function register(string $name, callable $callback) : void
 	{
-		assert(
-			!isset($this->services[$name]),
-			new AssertionException(
-				'Service `%s` is already registered',
-				$name
-			)
-		);
+		assert(!isset($this->services[$name]));
 
 		$this->services[$name] = $callback;
 	}
 
 	public function unregister(string $name) : void
 	{
-		assert(
-			isset($this->services[$name]),
-			new AssertionException(
-				'Service `%s` is not registered',
-				$name
-			)
-		);
+		assert(isset($this->services[$name]));
 
 		unset($this->services[$name]);
 		unset($this->loaded[$name]);
@@ -76,13 +64,7 @@ class Di
 
 	public function get(string $name) : mixed
 	{
-		assert(
-			isset($this->services[$name]),
-			new AssertionException(
-				'Service `%s` is not registered',
-				$name
-			)
-		);
+		assert(isset($this->services[$name]));
 
 		if (!isset($this->loaded[$name])) {
 			$this->services[$name] = $this->services[$name]($this);

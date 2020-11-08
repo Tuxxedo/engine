@@ -41,8 +41,6 @@ class Config implements \ArrayAccess, Immutable
 	/**
 	 * @param string $directive
 	 * @return mixed
-	 *
-	 * @throws AssertionException
 	 */
 	public function offsetGet(mixed $directive) : mixed
 	{
@@ -95,9 +93,6 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->getGroupMap();
 	}
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function getGroup(string $group) : object
 	{
 		return $this->reader->group($group);
@@ -108,9 +103,6 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->hasGroup($group);
 	}
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function getValue(string $directive) : mixed
 	{
 		return $this->reader->value($directive);
@@ -121,9 +113,6 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->hasValue($directive);
 	}
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function getValueFromGroup(string $group, string $directive) : mixed
 	{
 		return $this->reader->valueFromGroup($group, $directive);

@@ -3,7 +3,6 @@
 declare(strict_types = 1);
 
 use PHPUnit\Framework\TestCase;
-use Tuxxedo\AssertionException;
 use Tuxxedo\Config;
 use Tuxxedo\Config\Reader\Ini;
 use Tuxxedo\Config\Reader\Json;
@@ -16,22 +15,22 @@ final class ConfigTest extends TestCase
 	public function configInterfaceDataProvider() : \Generator
 	{
 		yield [
-			AssertionException::class,
+			\AssertionError::class,
 			fn(Config $config) => $config->getValue('unknown.test')
 		];
 
 		yield [
-			AssertionException::class,
+			\AssertionError::class,
 			fn(Config $config) => $config['unknown.test']
 		];
 
 		yield [
-			AssertionException::class,
+			\AssertionError::class,
 			fn(Config $config) => $config->getGroup('unknown')
 		];
 
 		yield [
-			AssertionException::class,
+			\AssertionError::class,
 			fn(Config $config) => $config->getValueFromGroup('unknown', 'test')
 		];
 

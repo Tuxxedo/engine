@@ -14,7 +14,6 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config;
 
-use Tuxxedo\AssertionException;
 use Tuxxedo\ImmutableCollection;
 
 interface ReaderInterface
@@ -42,18 +41,9 @@ interface ReaderInterface
 
 	public function hasValueInGroup(string $group, string $directive) : bool;
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function group(string $group) : object;
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function value(string $directive) : mixed;
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function valueFromGroup(string $group, string $directive) : mixed;
 }

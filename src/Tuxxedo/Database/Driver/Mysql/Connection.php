@@ -34,6 +34,7 @@ class Connection implements ConnectionInterface
 	public const OPTION_SOCKET = 'socket';
 	public const OPTION_PERSISTENT = 'persistent';
 	public const OPTION_SSL = 'ssl';
+	public const OPTION_CLIENT_ENCODING = 'encoding';
 
 	private ?\mysqli $link = null;
 
@@ -50,6 +51,7 @@ class Connection implements ConnectionInterface
 		self::OPTION_SOCKET => '',
 		self::OPTION_PERSISTENT => false,
 		self::OPTION_SSL => false,
+		self::OPTION_CLIENT_ENCODING => 'UTF-8',
 	];
 
 	/**
@@ -89,6 +91,17 @@ class Connection implements ConnectionInterface
 			throw new ConnectionException(
 				$link->connect_errno,
 				$link->connect_error
+			);
+		}
+
+		if ($encoding = $this->options[self::OPTION_CLIENT_ENCODING]) {
+			$link->set_charset($encoding);
+		}
+
+		if ($link->errno) {
+			throw new ConnectionException(
+				$link->errno,
+				$link->error
 			);
 		}
 

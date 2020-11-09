@@ -109,7 +109,7 @@ class Connection implements ConnectionInterface
             }
 
             if ($val !== '' && $val !== null) {
-                if (\mb_strlen($connectionString) !== 0) {
+                if (!empty($connectionString)) {
                     $connectionString .= ' ';
                 }
 

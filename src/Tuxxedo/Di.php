@@ -19,7 +19,7 @@ class Di
 	private static ?self $instance = null;
 
 	/**
-	 * @var array<string, callable>
+	 * @var array<string, \Closure>
 	 */
 	private array $services = [];
 
@@ -37,7 +37,7 @@ class Di
 		return self::$instance;
 	}
 
-	public function register(string $name, callable $callback) : void
+	public function register(string $name, \Closure $callback) : void
 	{
 		assert(!isset($this->services[$name]));
 

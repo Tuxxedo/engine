@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Tuxxedo\Config;
 use Tuxxedo\Config\Reader\Json;
 use Tuxxedo\Di;
+use Tuxxedo\Exception;
 use Tuxxedo\ImmutableCollection;
 use Tuxxedo\Version;
 
@@ -94,6 +95,13 @@ final class DiTest extends TestCase
 		$di->register('test', fn(Di $di) : bool => $di->get('version') === Version::FULL);
 
 		$this->assertTrue($di->get('test'));
+	}
+
+	public function testNeeds() : void
+	{
+		$this->expectException(Exception::class);
+
+		(new Di)->need('unknown');
 	}
 }
 

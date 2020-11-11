@@ -64,7 +64,9 @@ class Di
 
 	public function get(string $name) : mixed
 	{
-		assert(isset($this->services[$name]));
+		if (!isset($this->services[$name])) {
+			return null;
+		}
 
 		if (!isset($this->loaded[$name])) {
 			$this->services[$name] = $this->services[$name]($this);
@@ -72,5 +74,19 @@ class Di
 		}
 
 		return $this->services[$name];
+	}
+
+	public function need(string $name) : mixed
+	{
+		$service = $this->get($name);
+
+		if ($service === null) {
+			throw new Exception(
+				'Unable to find DI service: %s',
+				$name
+			);
+		}
+
+		return $service;
 	}
 }

@@ -51,7 +51,7 @@ class Connection implements ConnectionInterface
 		self::OPTION_SOCKET => '',
 		self::OPTION_PERSISTENT => false,
 		self::OPTION_SSL => false,
-		self::OPTION_CLIENT_ENCODING => 'UTF-8',
+		self::OPTION_CLIENT_ENCODING => 'utf8mb4',
 	];
 
 	/**

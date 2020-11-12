@@ -16,9 +16,9 @@ namespace Tuxxedo;
 
 abstract class Application
 {
-	protected Di $di;
+	protected ?Di $di = null;
 
-	public function __construct(Di $di)
+	public function __construct(?Di $di = null)
 	{
 		$this->di = $di;
 	}

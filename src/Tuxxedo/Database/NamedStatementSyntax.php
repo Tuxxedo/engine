@@ -101,10 +101,11 @@ class NamedStatementSyntax
 	protected function parse(string $flavor, string $sql, array $bindings) : void
 	{
 		$newBindings = [];
+		$rules = self::$flavorRules[$flavor];
 
 		$this->sql = (string) \preg_replace_callback(
 			'/:([^:]+):/',
-			static function(array $matches) use($flavor, $newBindings, $bindings) : string {
+			static function(array $matches) use($flavor, $rules, $newBindings, $bindings) : string {
 				static $n = 0;
 
 				if (!isset($bindings[$matches[1]])) {
@@ -113,8 +114,6 @@ class NamedStatementSyntax
 						$matches[1]
 					);
 				}
-
-				$rules = self::$flavorRules[$flavor];
 
 				if ($rules[self::RULE_TYPES]) {
 					$newBindings[$matches[1]] = [

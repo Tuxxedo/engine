@@ -18,6 +18,9 @@ namespace Tuxxedo\Database\Driver\Postgresql;
 use Tuxxedo\Database\ConnectionException;
 use Tuxxedo\Database\ConnectionInterface;
 use Tuxxedo\Database\ConnectionOptionsTrait;
+use Tuxxedo\Database\QueryException;
+use Tuxxedo\Database\ResultInterface;
+use Tuxxedo\Database\StatementInterface;
 
 class Connection implements ConnectionInterface
 {
@@ -37,7 +40,7 @@ class Connection implements ConnectionInterface
     /**
      * @var resource|null
      */
-    private $link = null;
+    private ?mixed $link = null;
 
     /**
      * @var array<string, mixed>
@@ -55,12 +58,15 @@ class Connection implements ConnectionInterface
         self::OPTION_APPLICATION_NAME => 'Tuxxedo Engine',
     ];
 
-    public function __construct(array $options)
+	/**
+	 * @param array<string, mixed>|iterable<object> $options
+	 */
+    public function __construct(array | object $options)
     {
         $this->setOptions($options);
     }
 
-    private function getConnectionOption(string $key, mixed $val) {
+    private function getConnectionOption(string $key, mixed $val): string {
         if ($key === self::OPTION_CLIENT_ENCODING) {
             return 'client_encoding=' . $val;
         }
@@ -95,7 +101,7 @@ class Connection implements ConnectionInterface
     /**
      * @throws ConnectionException
      */
-    private function getInternalLink()
+    private function getInternalLink(): mixed
     {
         if ($this->link !== null) {
             return $this->link;
@@ -104,9 +110,16 @@ class Connection implements ConnectionInterface
         $connectionString = $this->createConnectionString();
 
         if ($this->options[self::OPTION_PERSISTENT]) {
-            $link = \pg_pconnect($connectionString);
+            $link = @\pg_pconnect($connectionString);
         } else {
-            $link = \pg_connect($connectionString);
+            $link = @\pg_connect($connectionString);
+        }
+
+        if (!$link) {
+            throw new ConnectionException(
+                -1,
+                'Failed to connect'
+            );
         }
 
         if (\pg_connection_status($link) !== \PGSQL_CONNECTION_OK) {

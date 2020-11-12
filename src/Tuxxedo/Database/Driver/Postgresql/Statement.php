@@ -70,7 +70,7 @@ class Statement implements StatementInterface
 			throw new QueryException(
 				-1,
                 \pg_last_error($link),
-				$sql,
+				$this->sql,
 			);
 		}
 

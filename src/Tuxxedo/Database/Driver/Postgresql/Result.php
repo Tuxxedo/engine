@@ -21,7 +21,7 @@ use Tuxxedo\Database\ResultRow;
 class Result implements ResultInterface
 {
 	/**
-	 * @var resource<mixed>
+	 * @var resource
 	 */
 	private ?\mixed $result = null;
 
@@ -51,7 +51,7 @@ class Result implements ResultInterface
 	public function rewind() : void
 	{
 		assert($this->result !== null);
-		assert($this->result->num_rows > 0);
+		assert(\pg_num_rows($this->result) > 0);
 
 		\pg_result_seek($this->result, 0);
 	}
@@ -60,7 +60,7 @@ class Result implements ResultInterface
 	{
 		assert($this->result !== null);
 
-		return $this->iteratorPosition < $this->result->num_rows;
+		return $this->iteratorPosition < \pg_num_rows($this->result);
 	}
 
 	public function next() : void
@@ -98,7 +98,7 @@ class Result implements ResultInterface
 			return 0;
 		}
 
-		return $this->result->num_rows;
+		return \pg_num_rows($this->result);
 	}
 
 	/**
@@ -115,9 +115,11 @@ class Result implements ResultInterface
 	public function fetchNum() : ?array
 	{
 		assert($this->result !== null);
-		assert($this->result->num_rows > 0);
+		assert(\pg_num_rows($this->result) > 0);
 
-		return \pg_fetch_array($this->result, null, \ PGSQL_NUM) ?: null;
+		/** @var array<string>|false $array */
+		$array = \pg_fetch_array($this->result, null, \PGSQL_NUM);
+		return $array ?: null;
 	}
 
 	/**
@@ -126,9 +128,12 @@ class Result implements ResultInterface
 	public function fetchAssoc() : ?array
 	{
 		assert($this->result !== null);
-		assert($this->result->num_rows > 0);
+		assert(\pg_num_rows($this->result) > 0);
 
-		return \pg_fetch_assoc($this->result, null) ?: null;
+		/** @var array<string, string>|false $assoc */
+		$assoc = \pg_fetch_assoc($this->result, null);
+
+		return $assoc ?: null;
 	}
 
 	/**
@@ -137,8 +142,16 @@ class Result implements ResultInterface
 	public function fetchObject(string $className, array $parameters = null) : ?object
 	{
 		assert($this->result !== null);
-		assert($this->result->num_rows > 0);
+		assert(\pg_num_rows($this->result) > 0);
 
-		return \pg_fetch_object($this->result, null, $className, $parameters) ?: null;
+		if ($parameters !== null) {
+			/** @var object|false $object */
+			$object = \pg_fetch_object($this->result, null, $className, $parameters);
+		} else {
+			/** @var object|false $object */
+			$object = \pg_fetch_object($this->result, null, $className);
+		}
+		
+		return $object ?: null;
 	}
 }

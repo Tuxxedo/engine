@@ -10,6 +10,10 @@ namespace PHPSTORM_META
 		'' => '@',
 	]));
 
+	override(Di::need(0), map([
+		'' => '@',
+	]));
+
 	override(Collection::get(0), map([
 		'' => '@'
 	]));

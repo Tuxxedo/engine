@@ -13,6 +13,7 @@
 namespace Tuxxedo\Database;
 
 use Tuxxedo\Database\Driver\Mysql;
+use Tuxxedo\Database\Driver\Postgresql;
 use Tuxxedo\Exception;
 
 class NamedStatementSyntax
@@ -90,8 +91,9 @@ class NamedStatementSyntax
 	public static function getDeterminedFlavor(ConnectionInterface $connection) : ?string
 	{
 		return match($connection::class) {
-			Mysql\Connection::class => self::FLAVOR_MYSQL,
-			default => null,
+			Mysql\Connection::class	=> self::FLAVOR_MYSQL,
+			Postgresql\Connection::class => self::FLAVOR_PGSQL,
+			default	=> null,
 		};
 	}
 

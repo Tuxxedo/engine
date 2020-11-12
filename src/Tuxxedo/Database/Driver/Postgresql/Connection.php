@@ -40,7 +40,7 @@ class Connection implements ConnectionInterface
     /**
      * @var resource|null
      */
-    private ?mixed $link = null;
+    private mixed $link = null;
 
     /**
      * @var array<string, mixed>
@@ -53,7 +53,7 @@ class Connection implements ConnectionInterface
         self::OPTION_TIMEOUT => 3,
         self::OPTION_PORT => 5432,
         self::OPTION_PERSISTENT => false,
-		self::OPTION_SSL => false,
+	self::OPTION_SSL => false,
         self::OPTION_CLIENT_ENCODING => '',
         self::OPTION_APPLICATION_NAME => 'Tuxxedo Engine',
     ];
@@ -66,18 +66,24 @@ class Connection implements ConnectionInterface
         $this->setOptions($options);
     }
 
-    private function getConnectionOption(string $key, mixed $val): string {
+    private function getConnectionOption(string $key, mixed $val) : string
+    {
         if ($key === self::OPTION_CLIENT_ENCODING) {
             return 'client_encoding=' . $val;
         }
-        if ($key == self::OPTION_SSL) {
+
+        if ($key === self::OPTION_SSL) {
             return 'sslmode=' . ($val ? 'require' : 'disable');
         }
+
+        if (\str_contains((string) $val, ' ')) {
+        	$val = \sprintf('\'%s\'', $val);
+	}
 
         return $key . '=' . $val;
     }
 
-    private function createConnectionString(): string
+    private function createConnectionString() : string
     {
         $connectionString = '';
 
@@ -101,7 +107,7 @@ class Connection implements ConnectionInterface
     /**
      * @throws ConnectionException
      */
-    private function getInternalLink(): mixed
+    private function getInternalLink() : mixed
     {
         if ($this->link !== null) {
             return $this->link;
@@ -134,12 +140,12 @@ class Connection implements ConnectionInterface
         return $link;
     }
 
-    public function getLink(): mixed
+    public function getLink() : mixed
     {
         return $this->link;
     }
 
-    public function isConnected(): bool
+    public function isConnected() : bool
     {
         return \is_resource($this->link) && \pg_connection_status($this->link) === \PGSQL_CONNECTION_OK;
     }
@@ -198,19 +204,19 @@ class Connection implements ConnectionInterface
 	public function query(string $sql) : ResultInterface
 	{
 		$link = $this->getInternalLink();
-		$stmt = $link->prepare($sql);
+		$query = @\pg_query($link, $sql);
 
-		if (!$stmt || !$stmt->execute()) {
+		if (!$query) {
 			throw new QueryException(
 				-1,
-                \pg_last_error($link),
+                		\pg_last_error($link),
 				$sql,
 			);
 		}
 
 		return new Result(
 			$this,
-			$stmt,
+			$query,
 		);
 	}
 }

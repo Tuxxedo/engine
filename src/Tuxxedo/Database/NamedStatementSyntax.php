@@ -91,9 +91,9 @@ class NamedStatementSyntax
 	public static function getDeterminedFlavor(ConnectionInterface $connection) : ?string
 	{
 		return match($connection::class) {
-			Mysql\Connection::class			=> self::FLAVOR_MYSQL,
-			Postgresql\Connection::class	=> self::FLAVOR_PGSQL,
-			default							=> null,
+			Mysql\Connection::class	=> self::FLAVOR_MYSQL,
+			Postgresql\Connection::class => self::FLAVOR_PGSQL,
+			default	=> null,
 		};
 	}
 

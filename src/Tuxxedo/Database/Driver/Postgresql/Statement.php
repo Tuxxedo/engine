@@ -69,7 +69,7 @@ class Statement implements StatementInterface
 		if (!$result) {
 			throw new QueryException(
 				-1,
-                \pg_last_error($link),
+                		\pg_last_error($link),
 				$this->sql,
 			);
 		}

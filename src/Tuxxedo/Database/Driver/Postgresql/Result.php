@@ -23,7 +23,7 @@ class Result implements ResultInterface
 	/**
 	 * @var resource
 	 */
-	private ?\mixed $result = null;
+	private mixed $result = null;
 
 	private int $iteratorPosition = 0;
 	private int $affectedRows = 0;

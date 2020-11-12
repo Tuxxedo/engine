@@ -28,7 +28,7 @@ interface ResultInterface extends \Iterator, \Countable
 	/**
 	 * @return array<int, mixed>|null
 	 */
-	public function fetchArray() : ?array;
+	public function fetchNum() : ?array;
 
 	/**
 	 * @return array<string | int, mixed>|null

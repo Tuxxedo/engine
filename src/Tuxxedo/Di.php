@@ -28,6 +28,14 @@ class Di
 	 */
 	private array $loaded = [];
 
+	private function __construct()
+	{
+	}
+
+	private function __clone()
+	{
+	}
+
 	public static function init() : self
 	{
 		if (!self::$instance instanceof self) {
@@ -35,6 +43,16 @@ class Di
 		}
 
 		return self::$instance;
+	}
+
+	public static function reset() : void
+	{
+		if (self::$instance === null) {
+			return;
+		}
+
+		self::$instance->services = [];
+		self::$instance->loaded = [];
 	}
 
 	public function register(string $name, \Closure $callback) : void

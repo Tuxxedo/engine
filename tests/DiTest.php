@@ -51,7 +51,7 @@ final class DiTest extends TestCase
 	 */
 	public function testDiRegister(string $name, \Closure $initializer, \Closure $expectance) : void
 	{
-		$di = new Di;
+		$di = Di::init();
 		$di->register($name, $initializer);
 
 		$this->assertTrue($di->isRegistered($name));
@@ -60,6 +60,8 @@ final class DiTest extends TestCase
 		$expectance($di->get($name));
 
 		$this->assertTrue($di->isLoaded($name));
+
+		Di::reset();
 	}
 
 	/**
@@ -67,7 +69,7 @@ final class DiTest extends TestCase
 	 */
 	public function testDiUnregister(string $name, \Closure $initializer, \Closure $expectance) : void
 	{
-		$di = new Di;
+		$di = Di::init();
 		$di->register($name, $initializer);
 
 		$this->assertTrue($di->isRegistered($name));
@@ -86,7 +88,7 @@ final class DiTest extends TestCase
 
 	public function testDiMultiple() : void
 	{
-		$di = new Di;
+		$di = Di::init();
 
 		$this->assertFalse($di->isRegistered('version'));
 		$this->assertFalse($di->isLoaded('test'));
@@ -95,13 +97,54 @@ final class DiTest extends TestCase
 		$di->register('test', fn(Di $di) : bool => $di->get('version') === Version::FULL);
 
 		$this->assertTrue($di->get('test'));
+
+		Di::reset();
 	}
 
 	public function testNeeds() : void
 	{
 		$this->expectException(Exception::class);
 
-		(new Di)->need('unknown');
+		Di::init()->need('unknown');
+	}
+
+	public function testMulti() : void
+	{
+		$di1 = Di::init();
+
+		$di1->register('version', fn() : string => Version::FULL);
+
+		$this->assertTrue($di1->isRegistered('version'));
+
+		$di2 = Di::init();
+
+		$this->assertTrue($di2->isRegistered('version'));
+		$this->assertFalse($di2->isLoaded('version'));
+
+		$this->assertSame($di1->isRegistered('version'), $di2->isRegistered('version'));
+		$this->assertSame($di1->isLoaded('version'), $di2->isLoaded('version'));
+
+		Di::reset();
+	}
+
+	public function testReset() : void
+	{
+		$di = Di::init();
+
+		$this->assertFalse($di->isRegistered('version'));
+		$this->assertFalse($di->isLoaded('version'));
+
+		$di->register('version', fn() : string => Version::FULL);
+
+		$this->assertSame(Version::FULL, $di->get('version'));
+
+		$this->assertTrue($di->isRegistered('version'));
+		$this->assertTrue($di->isLoaded('version'));
+
+		Di::reset();
+
+		$this->assertFalse($di->isRegistered('version'));
+		$this->assertFalse($di->isLoaded('version'));
 	}
 }
 

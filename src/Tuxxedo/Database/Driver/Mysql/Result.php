@@ -146,6 +146,6 @@ class Result implements ResultInterface
 			return $this->result->fetch_object($className, $parameters) ?: null;
 		}
 
-		return $this->result->fetch_object($className ) ?: null;
+		return $this->result->fetch_object($className) ?: null;
 	}
 }

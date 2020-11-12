@@ -115,7 +115,7 @@ class Result implements ResultInterface
 	/**
 	 * @return array<mixed>|null
 	 */
-	public function fetchArray() : ?array
+	public function fetchNum() : ?array
 	{
 		assert($this->result !== null);
 		assert($this->result->num_rows > 0);

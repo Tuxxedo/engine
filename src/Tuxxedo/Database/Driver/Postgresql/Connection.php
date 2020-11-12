@@ -24,38 +24,15 @@ class Connection implements ConnectionInterface
     use ConnectionOptionsTrait;
 
     public const OPTION_HOST = 'host';
-    public const OPTION_HOST_ADDRESS = 'hostaddr';
-    public const OPTION_PORT = 'port';
-    public const OPTION_DATABASE = 'dbname';
     public const OPTION_USERNAME = 'user';
     public const OPTION_PASSWORD = 'password';
+    public const OPTION_DATABASE = 'dbname';
     public const OPTION_TIMEOUT = 'connect_timeout';
-    public const OPTION_CLIENT_ENCODING = 'client_encoding';
-    public const OPTION_OPTIONS = 'options';
-    public const OPTION_APPLICATION_NAME = 'application_name';
-    public const OPTION_KEEPALIVES = 'keepalives';
-    public const OPTION_KEEPALIVES_IDLE = 'keepalives_idle';
-    public const OPTION_KEEPALIVES_INTERVAL = 'keepalives_interval';
-    public const OPTION_KEEPALIVES_COUNT = 'keepalives_count';
-    public const OPTION_SSLMODE = 'sslmode';
-    public const OPTION_SSLCOMPRESSION = 'sslcompression';
-    public const OPTION_SSLCERT = 'sslcert';
-    public const OPTION_SSLKEY = 'sslkey';
-    public const OPTION_SSLROOTCERT = 'sslrootcert';
-    public const OPTION_SSLCRL = 'sslcrl';
-    public const OPTION_REQUIREPEER = 'requirepeer';
-    public const OPTION_KRBSRVNAME = 'krbsrvname';
-    public const OPTION_GSSLIB = 'gsslib';
-    public const OPTION_SERVICE = 'service';
-    public const OPTION_TARGET_SESSION_ATTRS = 'target_session_attrs';
+    public const OPTION_PORT = 'port';
     public const OPTION_PERSISTENT = 'persistent';
-
-    public const SSLMODE_DISABLE = 'disable';
-    public const SSLMODE_ALLOW = 'allow';
-    public const SSLMODE_PREFER = 'prefer';
-    public const SSLMODE_REQUIRE = 'require';
-    public const SSLMODE_VERIFY_CA = 'verify-ca';
-    public const SSLMODE_VERIFY_FULL = 'verify-full';
+    public const OPTION_SSL = 'ssl';
+    public const OPTION_CLIENT_ENCODING = 'encoding';
+    public const OPTION_APPLICATION_NAME = 'application_name';
 
     /**
      * @var resource|null
@@ -67,36 +44,31 @@ class Connection implements ConnectionInterface
      */
     private array $options = [
         self::OPTION_HOST => '',
-        self::OPTION_HOST_ADDRESS => '',
-        self::OPTION_PORT => 5432,
-        self::OPTION_DATABASE => '',
         self::OPTION_USERNAME => '',
         self::OPTION_PASSWORD => '',
-        self::OPTION_TIMEOUT => 0,
-        self::OPTION_CLIENT_ENCODING => '',
-        self::OPTION_OPTIONS => '',
-        self::OPTION_APPLICATION_NAME => 'Tuxxedo Engine',
-        self::OPTION_KEEPALIVES => 1,
-        self::OPTION_KEEPALIVES_IDLE => 0,
-        self::OPTION_KEEPALIVES_INTERVAL => 0,
-        self::OPTION_KEEPALIVES_COUNT => 0,
-        self::OPTION_SSLMODE => self::SSLMODE_PREFER,
-        self::OPTION_SSLCOMPRESSION => 1,
-        self::OPTION_SSLCERT => '',
-        self::OPTION_SSLKEY => '',
-        self::OPTION_SSLROOTCERT => '',
-        self::OPTION_SSLCRL => '',
-        self::OPTION_REQUIREPEER => '',
-        self::OPTION_KRBSRVNAME => '',
-        self::OPTION_GSSLIB => '',
-        self::OPTION_SERVICE => '',
-        self::OPTION_TARGET_SESSION_ATTRS => '',
+        self::OPTION_DATABASE => '',
+        self::OPTION_TIMEOUT => 3,
+        self::OPTION_PORT => 5432,
         self::OPTION_PERSISTENT => false,
+		self::OPTION_SSL => false,
+        self::OPTION_CLIENT_ENCODING => '',
+        self::OPTION_APPLICATION_NAME => 'Tuxxedo Engine',
     ];
 
     public function __construct(array $options)
     {
         $this->setOptions($options);
+    }
+
+    private function getConnectionOption(string $key, mixed $val) {
+        if ($key === self::OPTION_CLIENT_ENCODING) {
+            return 'client_encoding=' . $val;
+        }
+        if ($key == self::OPTION_SSL) {
+            return 'sslmode=' . ($val ? 'require' : 'disable');
+        }
+
+        return $key . '=' . $val;
     }
 
     private function createConnectionString(): string
@@ -113,7 +85,7 @@ class Connection implements ConnectionInterface
                     $connectionString .= ' ';
                 }
 
-                $connectionString .= $key . '=' . $val;
+                $connectionString .= $this->getConnectionOption($key, $val);
             }
         }
 
@@ -139,7 +111,7 @@ class Connection implements ConnectionInterface
 
         if (\pg_connection_status($link) !== \PGSQL_CONNECTION_OK) {
             throw new ConnectionException(
-                0,
+                -1,
                 \pg_last_error($link)
             );
         }
@@ -149,7 +121,7 @@ class Connection implements ConnectionInterface
         return $link;
     }
 
-    public function getLink()
+    public function getLink(): mixed
     {
         return $this->link;
     }
@@ -158,4 +130,74 @@ class Connection implements ConnectionInterface
     {
         return \is_resource($this->link) && \pg_connection_status($this->link) === \PGSQL_CONNECTION_OK;
     }
+
+	public function ping() : bool
+	{
+		try {
+			\pg_ping($this->getInternalLink());
+		} catch (ConnectionException) {
+			return false;
+		}
+
+		return true;
+    }
+    
+
+	/**
+	 * @return int
+	 *
+	 * @throws ConnectionException
+	 */
+	public function getInsertId() : int
+	{
+		return (int) \pg_last_oid($this->getInternalLink());
+	}
+
+	/**
+	 * @throws ConnectionException
+	 */
+	public function escape(string $input) : string
+	{
+		return \pg_escape_string($this->getInternalLink(), $input);
+	}
+
+	/**
+	 * @param string $sql
+	 * @return Statement
+	 *
+	 * @throws QueryException
+	 */
+	public function prepare(string $sql) : StatementInterface
+	{
+		return new Statement(
+			$this,
+			$sql,
+		);
+	}
+
+	/**
+	 * @param string $sql
+	 * @return Result
+	 *
+	 * @throws ConnectionException
+	 * @throws QueryException
+	 */
+	public function query(string $sql) : ResultInterface
+	{
+		$link = $this->getInternalLink();
+		$stmt = $link->prepare($sql);
+
+		if (!$stmt || !$stmt->execute()) {
+			throw new QueryException(
+				-1,
+                \pg_last_error($link),
+				$sql,
+			);
+		}
+
+		return new Result(
+			$this,
+			$stmt,
+		);
+	}
 }

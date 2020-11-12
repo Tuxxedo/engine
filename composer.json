@@ -13,16 +13,23 @@
     {
       "name": "Kalle Sommer Nielsen",
       "email": "kalle@tuxxedo.app"
+    },
+    {
+      "name": "DColt",
+      "email": "dev@dcolt.org"
     }
   ],
   "require": {
-    "php": "^8.0",
-    "ext-mysqli": "*"
+    "php": "^8.0"
   },
   "require-dev": {
     "ext-mbstring": "*",
     "phpunit/phpunit": "^9.4",
     "phpstan/phpstan": "^0.12"
+  },
+  "suggest": {
+    "ext-mysqli": "*",
+    "ext-postgres": "*"
   },
   "autoload": {
     "classmap": [

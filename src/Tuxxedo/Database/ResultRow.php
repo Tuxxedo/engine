@@ -12,8 +12,8 @@
 
 declare(strict_types = 1);
 
-namespace Tuxxedo;
+namespace Tuxxedo\Database;
 
-class AssertionException extends Exception
+class ResultRow
 {
 }

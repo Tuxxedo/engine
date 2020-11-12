@@ -17,6 +17,7 @@ namespace Tuxxedo\Config\Reader;
 use Tuxxedo\Config\ReaderTrait;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\Config\ReaderInterface;
+use Tuxxedo\ImmutableCollection;
 
 class Json implements ReaderInterface
 {
@@ -26,7 +27,12 @@ class Json implements ReaderInterface
 	}
 
 	/**
-	 * @var array<string, array<string, mixed>>
+	 * @var ImmutableCollection<string>|null
+	 */
+	private ?ImmutableCollection $groupMap = null;
+
+	/**
+	 * @var array<string, object>
 	 */
 	private array $groups = [];
 
@@ -35,37 +41,56 @@ class Json implements ReaderInterface
 	 */
 	private array $values = [];
 
-	private function __construct(array $config)
+	/**
+	 * @param array<string, array<string, mixed>> $config
+	 * @param ImmutableCollection<string>|null $groupMap
+	 */
+	private function __construct(array $config, ImmutableCollection $groupMap = null)
 	{
+		$this->groupMap = $groupMap;
+
 		$this->index($config);
 	}
 
 	/**
+	 * @param string $json
+	 * @param ImmutableCollection<string>|null $groupMap
+	 * @return self
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $json, int $depth = 512) : self
+	public static function fromString(string $json, ImmutableCollection $groupMap = null) : self
 	{
 		try {
-			$json = \json_decode($json, true, $depth, \JSON_THROW_ON_ERROR);
+			$json = \json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
-			// @todo Look at rethrow logic to preserve trace
 			throw new ReaderException($e->getMessage());
 		}
 
-		return new self($json);
+		return new self(
+			$json,
+			$groupMap,
+		);
 	}
 
 	/**
+	 * @param string $jsonFile
+	 * @param ImmutableCollection<string>|null $groupMap
+	 * @return self
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $jsonFile, int $depth = 512) : self
+	public static function fromFile(string $jsonFile, ImmutableCollection $groupMap = null) : self
 	{
-		$json = @\file_get_contents($jsonFile);
+		$jsonFile = @\file_get_contents($jsonFile);
 
-		if (!$json) {
+		if (!$jsonFile) {
 			throw new ReaderException('Unable to read JSON file');
 		}
 
-		return self::fromString($json, $depth);
+		return self::fromString(
+			$jsonFile,
+			$groupMap,
+		);
 	}
 }

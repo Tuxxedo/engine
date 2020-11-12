@@ -19,9 +19,19 @@
     "php": "^8.0",
     "ext-mysqli": "*"
   },
+  "require-dev": {
+    "ext-mbstring": "*",
+    "phpunit/phpunit": "^9.4",
+    "phpstan/phpstan": "^0.12"
+  },
   "autoload": {
     "classmap": [
       "src/"
     ]
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1.0-dev"
+    }
   }
 }

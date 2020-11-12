@@ -17,6 +17,9 @@ namespace Tuxxedo\Database\Driver\Mysql;
 use Tuxxedo\Database\ConnectionException;
 use Tuxxedo\Database\ConnectionInterface;
 use Tuxxedo\Database\ConnectionOptionsTrait;
+use Tuxxedo\Database\QueryException;
+use Tuxxedo\Database\ResultInterface;
+use Tuxxedo\Database\StatementInterface;
 
 class Connection implements ConnectionInterface
 {
@@ -31,6 +34,7 @@ class Connection implements ConnectionInterface
 	public const OPTION_SOCKET = 'socket';
 	public const OPTION_PERSISTENT = 'persistent';
 	public const OPTION_SSL = 'ssl';
+	public const OPTION_CLIENT_ENCODING = 'encoding';
 
 	private ?\mysqli $link = null;
 
@@ -47,9 +51,13 @@ class Connection implements ConnectionInterface
 		self::OPTION_SOCKET => '',
 		self::OPTION_PERSISTENT => false,
 		self::OPTION_SSL => false,
+		self::OPTION_CLIENT_ENCODING => 'utf8mb4',
 	];
 
-	public function __construct(array $options)
+	/**
+	 * @param array<string, mixed>|iterable<object> $options
+	 */
+	public function __construct(array | object $options)
 	{
 		$this->setOptions($options);
 	}
@@ -86,6 +94,17 @@ class Connection implements ConnectionInterface
 			);
 		}
 
+		if ($encoding = $this->options[self::OPTION_CLIENT_ENCODING]) {
+			$link->set_charset($encoding);
+		}
+
+		if ($link->errno) {
+			throw new ConnectionException(
+				$link->errno,
+				$link->error
+			);
+		}
+
 		$this->link = $link;
 
 		return $link;
@@ -99,5 +118,74 @@ class Connection implements ConnectionInterface
 	public function isConnected() : bool
 	{
 		return $this->link instanceof \mysqli;
+	}
+
+	public function ping() : bool
+	{
+		try {
+			$this->getInternalLink()->ping();
+		} catch (ConnectionException) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return int
+	 *
+	 * @throws ConnectionException
+	 */
+	public function getInsertId() : int
+	{
+		return (int) $this->getInternalLink()->insert_id;
+	}
+
+	/**
+	 * @throws ConnectionException
+	 */
+	public function escape(string $input) : string
+	{
+		return $this->getInternalLink()->real_escape_string($input);
+	}
+
+	/**
+	 * @param string $sql
+	 * @return Statement
+	 *
+	 * @throws QueryException
+	 */
+	public function prepare(string $sql) : StatementInterface
+	{
+		return new Statement(
+			$this,
+			$sql,
+		);
+	}
+
+	/**
+	 * @param string $sql
+	 * @return Result
+	 *
+	 * @throws ConnectionException
+	 * @throws QueryException
+	 */
+	public function query(string $sql) : ResultInterface
+	{
+		$link = $this->getInternalLink();
+		$stmt = $link->prepare($sql);
+
+		if (!$stmt || !$stmt->execute()) {
+			throw new QueryException(
+				$link->errno,
+				$link->error,
+				$sql,
+			);
+		}
+
+		return new Result(
+			$this,
+			$stmt,
+		);
 	}
 }

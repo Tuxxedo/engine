@@ -14,28 +14,36 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Config;
 
-use Tuxxedo\AssertionException;
+use Tuxxedo\ImmutableCollection;
 
 interface ReaderInterface
 {
+	/**
+	 * @param ImmutableCollection<string>|null $groupMap
+	 */
+	public static function fromString(string $string, ImmutableCollection $groupMap = null) : self;
+
+	/**
+	 * @param ImmutableCollection<string>|null $groupMap
+	 */
+	public static function fromFile(string $file, ImmutableCollection $groupMap = null) : self;
+
+	public function isGroupMapped(string $group) : bool;
+
+	/**
+	 * @return ImmutableCollection<string>|null
+	 */
+	public function getGroupMap() : ?ImmutableCollection;
+
 	public function hasGroup(string $group) : bool;
 
 	public function hasValue(string $directive) : bool;
 
 	public function hasValueInGroup(string $group, string $directive) : bool;
 
-	/**
-	 * @throws AssertionException
-	 */
-	public function group(string $group) : array;
+	public function group(string $group) : object;
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function value(string $directive) : mixed;
 
-	/**
-	 * @throws AssertionException
-	 */
 	public function valueFromGroup(string $group, string $directive) : mixed;
 }

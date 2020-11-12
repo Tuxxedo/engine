@@ -19,7 +19,7 @@ class Di
 	private static ?self $instance = null;
 
 	/**
-	 * @var array<string, callable>
+	 * @var array<string, \Closure>
 	 */
 	private array $services = [];
 
@@ -27,6 +27,14 @@ class Di
 	 * @var array<string, true>
 	 */
 	private array $loaded = [];
+
+	private function __construct()
+	{
+	}
+
+	private function __clone()
+	{
+	}
 
 	public static function init() : self
 	{
@@ -37,28 +45,26 @@ class Di
 		return self::$instance;
 	}
 
-	public function register(string $name, callable $callback) : void
+	public static function reset() : void
 	{
-		assert(
-			!isset($this->services[$name]),
-			new AssertionException(
-				'Service `%s` is already registered',
-				$name
-			)
-		);
+		if (self::$instance === null) {
+			return;
+		}
+
+		self::$instance->services = [];
+		self::$instance->loaded = [];
+	}
+
+	public function register(string $name, \Closure $callback) : void
+	{
+		assert(!isset($this->services[$name]));
 
 		$this->services[$name] = $callback;
 	}
 
 	public function unregister(string $name) : void
 	{
-		assert(
-			isset($this->services[$name]),
-			new AssertionException(
-				'Service `%s` is not registered',
-				$name
-			)
-		);
+		assert(isset($this->services[$name]));
 
 		unset($this->services[$name]);
 		unset($this->loaded[$name]);
@@ -76,13 +82,9 @@ class Di
 
 	public function get(string $name) : mixed
 	{
-		assert(
-			isset($this->services[$name]),
-			new AssertionException(
-				'Service `%s` is not registered',
-				$name
-			)
-		);
+		if (!isset($this->services[$name])) {
+			return null;
+		}
 
 		if (!isset($this->loaded[$name])) {
 			$this->services[$name] = $this->services[$name]($this);
@@ -90,5 +92,19 @@ class Di
 		}
 
 		return $this->services[$name];
+	}
+
+	public function need(string $name) : mixed
+	{
+		$service = $this->get($name);
+
+		if ($service === null) {
+			throw new Exception(
+				'Unable to find DI service: %s',
+				$name
+			);
+		}
+
+		return $service;
 	}
 }

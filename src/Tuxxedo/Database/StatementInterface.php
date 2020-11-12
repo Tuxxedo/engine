@@ -16,4 +16,14 @@ namespace Tuxxedo\Database;
 
 interface StatementInterface
 {
+	public function __construct(ConnectionInterface $link, string $sql);
+
+	public function bindOne(string $var, string | int | float $value) : void;
+
+	public function bind(string | int | float ...$values) : void;
+
+	/**
+	 * @return ResultInterface<object>
+	 */
+	public function execute() : ResultInterface;
 }

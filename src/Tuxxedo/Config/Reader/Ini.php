@@ -17,6 +17,7 @@ namespace Tuxxedo\Config\Reader;
 use Tuxxedo\Config\ReaderTrait;
 use Tuxxedo\Config\ReaderException;
 use Tuxxedo\Config\ReaderInterface;
+use Tuxxedo\ImmutableCollection;
 
 class Ini implements ReaderInterface
 {
@@ -26,7 +27,12 @@ class Ini implements ReaderInterface
 	}
 
 	/**
-	 * @var array<string, array<string, mixed>>
+	 * @var ImmutableCollection<string>|null
+	 */
+	private ?ImmutableCollection $groupMap = null;
+
+	/**
+	 * @var array<string, object>
 	 */
 	private array $groups = [];
 
@@ -35,36 +41,54 @@ class Ini implements ReaderInterface
 	 */
 	private array $values = [];
 
-	private function __construct(array $config)
+	/**
+	 * @param array<string, array<string, mixed>> $config
+	 * @param ImmutableCollection<string>|null $groupMap
+	 */
+	private function __construct(array $config, ImmutableCollection $groupMap = null)
 	{
+		$this->groupMap = $groupMap;
+
 		$this->index($config);
 	}
 
 	/**
+	 * @param string $ini
+	 * @param ImmutableCollection<string>|null $groupMap
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromString(string $ini) : self
+	public static function fromString(string $ini, ImmutableCollection $groupMap = null) : self
 	{
-		$ini = \parse_ini_string($ini, true, \INI_SCANNER_TYPED);
+		$ini = @\parse_ini_string($ini, true, \INI_SCANNER_TYPED);
 
 		if (!$ini) {
 			throw new ReaderException('Unable to parse ini string');
 		}
 
-		return new self($ini);
+		return new self(
+			$ini,
+			$groupMap
+		);
 	}
 
 	/**
+	 * @param string $iniFile
+	 * @param ImmutableCollection<string>|null $groupMap
+	 *
 	 * @throws ReaderException
 	 */
-	public static function fromFile(string $iniFile) : self
+	public static function fromFile(string $iniFile, ImmutableCollection $groupMap = null) : self
 	{
-		$iniFile = \parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
+		$iniFile = @\parse_ini_file($iniFile, true, \INI_SCANNER_TYPED);
 
 		if (!$iniFile) {
 			throw new ReaderException('Unable to parse ini file');
 		}
 
-		return new self($iniFile);
+		return new self(
+			$iniFile,
+			$groupMap
+		);
 	}
 }

@@ -14,6 +14,29 @@ declare(strict_types = 1);
 
 namespace Tuxxedo\Database;
 
-interface ResultInterface
+/**
+ * @extends \Iterator<object>
+ */
+interface ResultInterface extends \Iterator, \Countable
 {
+	public function __construct(ConnectionInterface $link, mixed $stmt);
+
+	public function getAffectedRows() : int;
+
+	public function fetch() : ?object;
+
+	/**
+	 * @return array<int, mixed>|null
+	 */
+	public function fetchArray() : ?array;
+
+	/**
+	 * @return array<string | int, mixed>|null
+	 */
+	public function fetchAssoc() : ?array;
+
+	/**
+	 * @param array<int, mixed> $parameters
+	 */
+	public function fetchObject(string $className, array $parameters = null) : ?object;
 }

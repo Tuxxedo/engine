@@ -16,10 +16,19 @@ namespace Tuxxedo;
 
 class Dispatcher
 {
+	private Di $di;
+
+	public function __construct(Di $di)
+	{
+		$this->di = $di;
+	}
+
 	public function forward(Route $route) : void
 	{
 		$callaback = [
-			new ($route->getFullyQualifiedController()),
+			new ($route->getFullyQualifiedController())(
+				$this->di,
+			),
 			$route->getAction()
 		];
 

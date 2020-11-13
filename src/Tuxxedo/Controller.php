@@ -16,4 +16,10 @@ namespace Tuxxedo;
 
 abstract class Controller
 {
+	protected Di $di;
+
+	public function __construct(Di $di)
+	{
+		$this->di = $di;
+	}
 }

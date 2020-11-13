@@ -21,7 +21,7 @@ class Route
 	private string $action;
 
 	/**
-	 * @var array<string | int, string | int | float>
+	 * @var array<string | int, mixed>
 	 */
 	private array $arguments;
 
@@ -29,7 +29,7 @@ class Route
 	 * @param string $controller
 	 * @param string $action
 	 * @param string|null $namespace
-	 * @param array<string | int, string | int | float> $arguments
+	 * @param array<string | int, mixed> $arguments
 	 */
 	public function __construct(string $controller, string $action, ?string $namespace = null, array $arguments = [])
 	{
@@ -84,7 +84,7 @@ class Route
 	}
 
 	/**
-	 * @return array<string | int, string | int | float>
+	 * @return array<string | int, mixed>
 	 */
 	public function getArguments() : array
 	{

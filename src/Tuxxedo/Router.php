@@ -116,7 +116,7 @@ class Router
 	}
 
 	/**
-	 * @return array<int, Route>
+	 * @return Route[]
 	 */
 	public function getRoutes(string $method) : array
 	{
@@ -144,7 +144,6 @@ class Router
 			return null;
 		}
 
-		/** @var Route $route */
 		foreach ($routes as $route) {
 			$routeRegex = $this->transformRegex(
 				$route->getRegex()

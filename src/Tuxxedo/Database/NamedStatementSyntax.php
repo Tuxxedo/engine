@@ -143,6 +143,7 @@ class NamedStatementSyntax
 	protected static function getTypeModifier(string $flavor, string $phpType) : string
 	{
 		assert($flavor === self::FLAVOR_MYSQL);
+		assert($phpType === 'string' || $phpType === 'integer' || $phpType === 'float');
 
 		return match($phpType) {
 			'string' => 's',

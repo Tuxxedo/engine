@@ -118,7 +118,7 @@ class Config implements \ArrayAccess, Immutable
 		return $this->reader->valueFromGroup($group, $directive);
 	}
 
-	public function hasValueFromGroup(string $group, string $directive) : bool
+	public function hasValueInGroup(string $group, string $directive) : bool
 	{
 		return $this->reader->hasValueInGroup($group, $directive);
 	}

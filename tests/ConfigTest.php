@@ -232,10 +232,10 @@ final class ConfigTest extends TestCase
 
 		$this->assertTrue($config->hasGroup('app'));
 		$this->assertTrue($config->hasValue('app.name'));
-		$this->assertTrue($config->hasValueFromGroup('app', 'name'));
+		$this->assertTrue($config->hasValueInGroup('app', 'name'));
 		$this->assertTrue(\str_starts_with($config->getValue('app.name'), 'Demo'));
 
-		$this->assertTrue($config->hasValueFromGroup('app', 'version'));
+		$this->assertTrue($config->hasValueInGroup('app', 'version'));
 		$this->assertIsInt($config->getValueFromGroup('app', 'version'));
 		$this->assertSame($config->getValueFromGroup('app', 'version'), $config['app.version']);
 

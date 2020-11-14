@@ -111,6 +111,8 @@ class Collection implements \ArrayAccess, \Countable, \Iterator
 	 */
 	public function current()
 	{
+		assert(\current($this->collection) !== false);
+
 		return \current($this->collection);
 	}
 

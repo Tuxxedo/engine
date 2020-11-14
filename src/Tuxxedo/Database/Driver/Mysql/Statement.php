@@ -99,7 +99,11 @@ class Statement implements StatementInterface
 
 	private static function getParameterModifier(string | float | int $value) : string
 	{
-		return match(\gettype($value)) {
+		$type = \gettype($value);
+
+		assert($type === 'string' || $type === 'integer' || $type === 'float');
+
+		return match($type) {
 			'string' => 's',
 			'float' => 'f',
 			'integer' => 'i',

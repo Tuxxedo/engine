@@ -12,7 +12,7 @@
 
 declare(strict_types = 1);
 
-namespace Tuxxedo;
+namespace Tuxxedo\Router;
 
 class Route
 {
@@ -100,7 +100,7 @@ class Route
 		return $this->arguments;
 	}
 
-	public function setArgument(string $name, mixed $value) : void
+	public function addArgument(string $name, mixed $value) : void
 	{
 		$this->arguments[$name] = $value;
 	}

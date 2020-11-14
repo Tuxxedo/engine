@@ -14,6 +14,8 @@ declare(strict_types = 1);
 
 namespace Tuxxedo;
 
+use Tuxxedo\Router\Route;
+
 class Dispatcher
 {
 	protected Di $di;
@@ -99,7 +101,7 @@ class Dispatcher
 
 		if ($route !== null) {
 			throw new NotFoundException(
-				'The controller \'%\' was not found',
+				'The controller \'%s\' was not found',
 				$route->getFullyQualifiedController()
 			);
 		}

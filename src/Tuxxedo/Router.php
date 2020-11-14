@@ -179,7 +179,7 @@ class Router
 	{
 		$routeRegex = new RouteRegex;
 
-		$regex = preg_replace_callback(
+		$regex = \preg_replace_callback(
 			'/{((?<arg>[a-zA-Z]+):((?<type>[int|float|string]+):)?(?<regex>.*?))}/',
 			static function (array $match) use($routeRegex) : string {
 				$routeRegex->addCapture(
@@ -194,7 +194,7 @@ class Router
 				);
 			},
 			$regex,
-			PREG_SET_ORDER
+			\PREG_SET_ORDER
 		);
 
 		if ($regex === null) {

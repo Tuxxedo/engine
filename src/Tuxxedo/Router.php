@@ -26,7 +26,7 @@ class Router
 	public const METHOD_PATCH = 'PATCH';
 
 	/**
-	 * @var array<string, array<int, array<string, string | Route>>>
+	 * @var array<string, array<int, Route>>
 	 */
 	protected array $routes = [
 		self::METHOD_ANY => [],
@@ -59,10 +59,7 @@ class Router
 	{
 		assert(self::isValidMethod($method));
 
-		$this->routes[$method][] = [
-			$route->getRegex(),
-			$route,
-		];
+		$this->routes[$method][] = $route;
 	}
 
 	public function addAny(Route $route) : void
@@ -116,7 +113,7 @@ class Router
 	}
 
 	/**
-	 * @return array<int, array<string, string | Route>>
+	 * @return array<int, Route>
 	 */
 	public function getRoutes(string $method) : array
 	{
@@ -144,8 +141,9 @@ class Router
 			return null;
 		}
 
-		foreach ($routes as [$regex, $route]) {
-			if (\preg_match('#' . $regex . '#', $path)) {
+		/** @var Route $route */
+		foreach ($routes as $route) {
+			if (\preg_match('#' . $route->getRegex() . '#', $path)) {
 				return $route;
 			}
 		}

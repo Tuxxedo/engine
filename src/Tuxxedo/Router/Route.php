@@ -64,7 +64,7 @@ class Route
 		$regex = \preg_replace_callback(
 			'/{((?<arg>[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*):(?<type>[^:]+:)*?(?<regex>.*?))}/',
 			function (array $match) : string {
-				assert(\in_array($match['type'], ['int', 'string', 'float']));
+				assert(self::isValidType($match['type']));
 				
 				$this->addRegexCapture(
 					$match['arg'],

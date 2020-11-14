@@ -18,7 +18,7 @@ use Tuxxedo\Config\ReaderInterface;
 use Tuxxedo\Design\Immutable;
 
 /**
- * @implements  \ArrayAccess<string, mixed>
+ * @implements \ArrayAccess<string, mixed>
  */
 class Config implements \ArrayAccess, Immutable
 {

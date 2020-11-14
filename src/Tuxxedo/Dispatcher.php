@@ -16,11 +16,23 @@ namespace Tuxxedo;
 
 class Dispatcher
 {
-	private Di $di;
+	protected Di $di;
+	protected ?\Closure $errorHandler = null;
 
-	public function __construct(Di $di)
+	public function __construct(Di $di, \Closure $errorHandler = null)
 	{
 		$this->di = $di;
+		$this->errorHandler = $errorHandler;
+	}
+
+	public function setErrorHandler(?\Closure $errorHandler) : void
+	{
+		$this->errorHandler = $errorHandler;
+	}
+
+	public function getErrorHandler() : ?\Closure
+	{
+		return $this->errorHandler;
 	}
 
 	public function forward(Route $route) : void
@@ -32,15 +44,25 @@ class Dispatcher
 			$route->getAction()
 		];
 
-		assert($callaback[0] instanceof Controller);
-		assert(\is_callable($callaback));
+		if (!$callaback[0] instanceof Controller || !\is_callable($callaback)) {
+			if ($this->errorHandler !== null) {
+				($this->errorHandler)();
+
+				return;
+			}
+
+			throw new NotFoundException(
+				'The controller \'%\' was not found',
+				$route->getFullyQualifiedController()
+			);
+		}
 
 		if ($route->hasArguments()) {
-			\call_user_func($callaback, ...$route->getArguments());
+			($callaback)(...$route->getArguments());
 
 			return;
 		}
 
-		\call_user_func($callaback);
+		($callaback)();
 	}
 }

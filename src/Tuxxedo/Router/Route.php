@@ -27,6 +27,11 @@ class Route
 	private array $arguments;
 
 	/**
+	 * @var array<string, string>
+	 */
+	private array $captures = [];
+
+	/**
 	 * @param string $controller
 	 * @param string $action
 	 * @param string|null $namespace
@@ -43,9 +48,72 @@ class Route
 		$this->arguments = $arguments;
 	}
 
-	public function getRegex() : string
+	public function getRawRegex() : string
 	{
 		return $this->regex;
+	}
+
+	public function getTransformedRegex() : ?string
+	{
+		static $regex = null;
+
+		if ($regex !== null) {
+			return $regex;
+		}
+
+		$regex = \preg_replace_callback(
+			'/{((?<arg>[a-zA-Z]+):((?<type>[int|float|string]+):)?(?<regex>.*?))}/',
+			function (array $match) : string {
+				$this->addRegexCapture(
+					$match['arg'],
+					$match['type'] ?: 'string',
+				);
+
+				return \sprintf(
+					'(?<%s>%s)',
+					$match['arg'],
+					$match['regex']
+				);
+			},
+			$this->regex,
+			\PREG_SET_ORDER
+		);
+
+		if ($regex === null) {
+			return null;
+		}
+
+		$regex = '/' . \str_replace('/', '\\/', $regex) . '/';
+
+		return $regex;
+	}
+
+	protected function addRegexCapture(string $name, string $type) : void
+	{
+		assert(!isset($this->captures[$name]));
+		assert(self::isValidType($type));
+
+		$this->captures[$name] = $type;
+	}
+
+	public function hasRegexCaptures() : bool
+	{
+		return \sizeof($this->captures) > 0;
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	public function getRegexCaptures() : array
+	{
+		assert($this->hasRegexCaptures());
+
+		return $this->captures;
+	}
+
+	private static function isValidType(string $type) : bool
+	{
+		return $type === 'string' || $type === 'int' || $type === 'float';
 	}
 
 	public function getNamespace() : string

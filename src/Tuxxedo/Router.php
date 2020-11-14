@@ -13,7 +13,6 @@
 namespace Tuxxedo;
 
 use Tuxxedo\Router\Route;
-use Tuxxedo\Router\RouteRegex;
 
 class Router
 {
@@ -145,19 +144,12 @@ class Router
 		}
 
 		foreach ($routes as $route) {
-			$routeRegex = $this->transformRegex(
-				$route->getRegex()
-			);
+			assert($route->getRawRegex() !== null);
+			assert($route->getTransformedRegex() !== null);
 
-			if ($routeRegex === null) {
-				continue;
-			}
-
-			assert($routeRegex->getRegex() !== null);
-
-			if (\preg_match_all($routeRegex->getRegex(), $path, $matches)) {
-				if ($routeRegex->hasCaptures()) {
-					foreach ($routeRegex->getCaptures() as $arg => $type) {
+			if (\preg_match_all($route->getTransformedRegex(), $path, $matches)) {
+				if ($route->hasRegexCaptures()) {
+					foreach ($route->getRegexCaptures() as $arg => $type) {
 						\settype($matches[$arg][0], $type);
 
 						$route->addArgument(
@@ -172,38 +164,5 @@ class Router
 		}
 
 		return null;
-	}
-
-	protected function transformRegex(string $regex) : ?RouteRegex
-	{
-		$routeRegex = new RouteRegex;
-
-		$regex = \preg_replace_callback(
-			'/{((?<arg>[a-zA-Z]+):((?<type>[int|float|string]+):)?(?<regex>.*?))}/',
-			static function (array $match) use($routeRegex) : string {
-				$routeRegex->addCapture(
-					$match['arg'],
-					$match['type'] ?: 'string',
-				);
-
-				return \sprintf(
-					'(?<%s>%s)',
-					$match['arg'],
-					$match['regex']
-				);
-			},
-			$regex,
-			\PREG_SET_ORDER
-		);
-
-		if ($regex === null) {
-			return null;
-		}
-
-		$routeRegex->setRegex(
-			'/' . \str_replace('/', '\\/', $regex) . '/'
-		);
-
-		return $routeRegex;
 	}
 }

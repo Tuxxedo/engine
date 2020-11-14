@@ -46,7 +46,10 @@ class Dispatcher
 
 		if (!$callaback[0] instanceof Controller || !\is_callable($callaback)) {
 			if ($this->errorHandler !== null) {
-				($this->errorHandler)();
+				($this->errorHandler)(
+					$this,
+					$route,
+				);
 
 				return;
 			}

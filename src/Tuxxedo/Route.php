@@ -16,6 +16,7 @@ namespace Tuxxedo;
 
 class Route
 {
+	private string $regex;
 	private ?string $namespace = null;
 	private string $controller;
 	private string $action;
@@ -31,14 +32,20 @@ class Route
 	 * @param string|null $namespace
 	 * @param array<string | int, mixed> $arguments
 	 */
-	public function __construct(string $controller, string $action, ?string $namespace = null, array $arguments = [])
+	public function __construct(string $regex, string $controller, string $action, ?string $namespace = null, array $arguments = [])
 	{
 		assert($namespace === null || $namespace[0] === '\\');
 
+		$this->regex = $regex;
 		$this->namespace = $namespace;
 		$this->controller = $controller;
 		$this->action = $action;
 		$this->arguments = $arguments;
+	}
+
+	public function getRegex() : string
+	{
+		return $this->regex;
 	}
 
 	public function getNamespace() : string
@@ -91,6 +98,11 @@ class Route
 		assert(\sizeof($this->arguments) > 0);
 
 		return $this->arguments;
+	}
+
+	public function setArgument(string $name, mixed $value) : void
+	{
+		$this->arguments[$name] = $value;
 	}
 
 	public function hasArguments() : bool

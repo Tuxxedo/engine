@@ -17,12 +17,19 @@ namespace Tuxxedo;
 class Dispatcher
 {
 	protected Di $di;
+	protected Router $router;
 	protected ?\Closure $errorHandler = null;
 
-	public function __construct(Di $di, \Closure $errorHandler = null)
+	public function __construct(Di $di, Router $router, \Closure $errorHandler = null)
 	{
 		$this->di = $di;
+		$this->router = $router;
 		$this->errorHandler = $errorHandler;
+	}
+
+	public function getRouter() : Router
+	{
+		return $this->router;
 	}
 
 	public function setErrorHandler(?\Closure $errorHandler) : void
@@ -35,6 +42,24 @@ class Dispatcher
 		return $this->errorHandler;
 	}
 
+	public function dispatch(string $method, string $path) : void
+	{
+		$route = $this->router->findRoute(
+			$method,
+			$path,
+		);
+
+		if ($route === null) {
+			$this->handleError();
+
+			return;
+		}
+
+		$this->forward(
+			$route,
+		);
+	}
+
 	public function forward(Route $route) : void
 	{
 		$callaback = [
@@ -45,27 +70,42 @@ class Dispatcher
 		];
 
 		if (!$callaback[0] instanceof Controller || !\is_callable($callaback)) {
-			if ($this->errorHandler !== null) {
-				($this->errorHandler)(
-					$this,
-					$route,
-				);
+			$this->handleError($route);
 
-				return;
-			}
+			return;
+		}
 
+		if ($route->hasArguments()) {
+			($callaback)(
+				...$route->getArguments()
+			);
+
+			return;
+		}
+
+		($callaback)();
+	}
+
+	protected function handleError(?Route $route = null) : void
+	{
+		if ($this->errorHandler !== null) {
+			($this->errorHandler)(
+				$this,
+				$route,
+			);
+
+			return;
+		}
+
+		if ($route !== null) {
 			throw new NotFoundException(
 				'The controller \'%\' was not found',
 				$route->getFullyQualifiedController()
 			);
 		}
 
-		if ($route->hasArguments()) {
-			($callaback)(...$route->getArguments());
-
-			return;
-		}
-
-		($callaback)();
+		throw new NotFoundException(
+			'No route found for the requested method and path'
+		);
 	}
 }

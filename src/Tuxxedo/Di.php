@@ -64,7 +64,10 @@ class Di
 		}
 
 		if (!isset($this->loaded[$name])) {
-			$this->services[$name] = ($this->services[$name])($this);
+			$this->services[$name] = ($this->services[$name])(
+				$this,
+			);
+
 			$this->loaded[$name] = true;
 		}
 

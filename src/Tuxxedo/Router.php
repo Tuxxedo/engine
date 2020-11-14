@@ -154,7 +154,9 @@ class Router
 				continue;
 			}
 
-			if (\preg_match_all((string) $routeRegex->getRegex(), $path, $matches)) {
+			assert($routeRegex->getRegex() !== null);
+
+			if (\preg_match_all($routeRegex->getRegex(), $path, $matches)) {
 				if ($routeRegex->hasCaptures()) {
 					foreach ($routeRegex->getCaptures() as $arg => $type) {
 						\settype($matches[$arg][0], $type);

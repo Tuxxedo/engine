@@ -14,8 +14,8 @@ namespace Tuxxedo;
 
 /**
  * @template T
- * @implements \ArrayAccess<string, T>
- * @implements \Iterator<string, T>
+ * @implements \ArrayAccess<string | int, T>
+ * @implements \Iterator<string | int, T>
  */
 class Collection implements \ArrayAccess, \Countable, \Iterator
 {
@@ -38,17 +38,17 @@ class Collection implements \ArrayAccess, \Countable, \Iterator
 	}
 
 	/**
-	 * @param string $name
+	 * @param string | int $name
 	 * @return T
 	 */
-	public function get(string $name) : mixed
+	public function get(string | int $name) : mixed
 	{
 		assert(isset($this->collection[$name]));
 
 		return $this->collection[$name];
 	}
 
-	public function exists(string $name) : bool
+	public function exists(string | int $name) : bool
 	{
 		return isset($this->collection[$name]);
 	}
@@ -94,9 +94,11 @@ class Collection implements \ArrayAccess, \Countable, \Iterator
 		unset($this->collection[$name]);
 	}
 
-	public function key() : string
+	public function key() : string | int
 	{
-		return (string) \key($this->collection);
+		assert(\key($this->collection) !== null);
+
+		return \key($this->collection);
 	}
 
 	public function valid() : bool

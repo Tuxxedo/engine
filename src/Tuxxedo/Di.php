@@ -16,8 +16,6 @@ namespace Tuxxedo;
 
 class Di
 {
-	private static ?self $instance = null;
-
 	/**
 	 * @var array<string, \Closure>
 	 */
@@ -28,31 +26,10 @@ class Di
 	 */
 	private array $loaded = [];
 
-	private function __construct()
+	public function reset() : void
 	{
-	}
-
-	private function __clone()
-	{
-	}
-
-	public static function init() : self
-	{
-		if (!self::$instance instanceof self) {
-			self::$instance = new self;
-		}
-
-		return self::$instance;
-	}
-
-	public static function reset() : void
-	{
-		if (self::$instance === null) {
-			return;
-		}
-
-		self::$instance->services = [];
-		self::$instance->loaded = [];
+		$this->services = [];
+		$this->loaded = [];
 	}
 
 	public function register(string $name, \Closure $callback) : void
@@ -87,7 +64,7 @@ class Di
 		}
 
 		if (!isset($this->loaded[$name])) {
-			$this->services[$name] = $this->services[$name]($this);
+			$this->services[$name] = \call_user_func($this->services[$name], $this);
 			$this->loaded[$name] = true;
 		}
 

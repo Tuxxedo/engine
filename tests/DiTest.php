@@ -51,7 +51,7 @@ final class DiTest extends TestCase
 	 */
 	public function testDiRegister(string $name, \Closure $initializer, \Closure $expectance) : void
 	{
-		$di = Di::init();
+		$di = new Di;
 		$di->register($name, $initializer);
 
 		$this->assertTrue($di->isRegistered($name));
@@ -60,8 +60,6 @@ final class DiTest extends TestCase
 		$expectance($di->get($name));
 
 		$this->assertTrue($di->isLoaded($name));
-
-		Di::reset();
 	}
 
 	/**
@@ -69,7 +67,7 @@ final class DiTest extends TestCase
 	 */
 	public function testDiUnregister(string $name, \Closure $initializer, \Closure $expectance) : void
 	{
-		$di = Di::init();
+		$di = new Di;
 		$di->register($name, $initializer);
 
 		$this->assertTrue($di->isRegistered($name));
@@ -88,7 +86,7 @@ final class DiTest extends TestCase
 
 	public function testDiMultiple() : void
 	{
-		$di = Di::init();
+		$di = new Di;
 
 		$this->assertFalse($di->isRegistered('version'));
 		$this->assertFalse($di->isLoaded('test'));
@@ -97,39 +95,35 @@ final class DiTest extends TestCase
 		$di->register('test', fn(Di $di) : bool => $di->get('version') === Version::FULL);
 
 		$this->assertTrue($di->get('test'));
-
-		Di::reset();
 	}
 
 	public function testNeeds() : void
 	{
 		$this->expectException(Exception::class);
 
-		Di::init()->need('unknown');
+		(new Di)->need('unknown');
 	}
 
 	public function testMulti() : void
 	{
-		$di1 = Di::init();
+		$di1 = new Di;
 
 		$di1->register('version', fn() : string => Version::FULL);
 
 		$this->assertTrue($di1->isRegistered('version'));
 
-		$di2 = Di::init();
+		$di2 = clone $di1;
 
 		$this->assertTrue($di2->isRegistered('version'));
 		$this->assertFalse($di2->isLoaded('version'));
 
 		$this->assertSame($di1->isRegistered('version'), $di2->isRegistered('version'));
 		$this->assertSame($di1->isLoaded('version'), $di2->isLoaded('version'));
-
-		Di::reset();
 	}
 
 	public function testReset() : void
 	{
-		$di = Di::init();
+		$di = new Di;
 
 		$this->assertFalse($di->isRegistered('version'));
 		$this->assertFalse($di->isLoaded('version'));
@@ -141,7 +135,7 @@ final class DiTest extends TestCase
 		$this->assertTrue($di->isRegistered('version'));
 		$this->assertTrue($di->isLoaded('version'));
 
-		Di::reset();
+		$di->reset();
 
 		$this->assertFalse($di->isRegistered('version'));
 		$this->assertFalse($di->isLoaded('version'));

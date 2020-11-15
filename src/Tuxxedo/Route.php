@@ -12,7 +12,7 @@
 
 declare(strict_types = 1);
 
-namespace Tuxxedo\Router;
+namespace Tuxxedo;
 
 class Route
 {
@@ -53,13 +53,18 @@ class Route
 		return $this->regex;
 	}
 
-	public function getTransformedRegex() : ?string
+	public function getTransformedRegex(string $routerClass) : ?string
 	{
-		static $regex = null;
+		assert(\is_a($routerClass, RouterInterface::class, true));
 
-		if ($regex !== null) {
-			return $regex;
-		}
+		// @todo This needs to support CLI by checking $routerClass for the syntax:
+		//
+		// Note that quotes can be optional, and the quote style cannot be mixed
+		//
+		// OLD REGEX: make:route {a:[a-z]} {b:int[0-9]+}
+		// NEW REGEX: make:route \-\-a="(?<a>[a-z])" \-\-b=(?<b>[0-9]+)
+		//  CAPTURES: a, string
+		//            b, int
 
 		$regex = \preg_replace_callback(
 			'/{((?<arg>[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*):(?:(?<type>[^:]+):)?(?<regex>.*?))}/',
@@ -72,7 +77,7 @@ class Route
 				return \sprintf(
 					'(?<%s>%s)',
 					$match['arg'],
-					$match['regex']
+					$match['regex'],
 				);
 			},
 			$this->regex,
@@ -83,14 +88,11 @@ class Route
 			return null;
 		}
 
-		$regex = '/' . \str_replace('/', '\\/', $regex) . '/';
-
-		return $regex;
+		return '/' . \str_replace('/', '\\/', $regex) . '/';
 	}
 
 	protected function addRegexCapture(string $name, string $type) : void
 	{
-		assert(!isset($this->captures[$name]));
 		assert(self::isValidType($type));
 
 		$this->captures[$name] = $type;

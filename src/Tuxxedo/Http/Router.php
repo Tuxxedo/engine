@@ -10,13 +10,16 @@
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */
 
-namespace Tuxxedo;
+namespace Tuxxedo\Http;
 
-use Tuxxedo\Router\Route;
+use Tuxxedo\Route;
+use Tuxxedo\RouterInterface;
+use Tuxxedo\RouterTrait;
 
-class Router
+class Router implements RouterInterface
 {
-	public const METHOD_ANY = 'ANY';
+	use RouterTrait;
+
 	public const METHOD_GET = 'GET';
 	public const METHOD_POST = 'POST';
 	public const METHOD_PUT = 'PUT';
@@ -55,18 +58,6 @@ class Router
 			|| $method === self::METHOD_OPTIONS
 			|| $method === self::METHOD_TRACE
 			|| $method === self::METHOD_PATCH;
-	}
-
-	public function add(string $method, Route $route) : void
-	{
-		assert(self::isValidMethod($method));
-
-		$this->routes[$method][] = $route;
-	}
-
-	public function addAny(Route $route) : void
-	{
-		$this->add(self::METHOD_ANY, $route);
 	}
 
 	public function addGet(Route $route) : void
@@ -112,57 +103,5 @@ class Router
 	public function addPatch(Route $route) : void
 	{
 		$this->add(self::METHOD_PATCH, $route);
-	}
-
-	/**
-	 * @return Route[]
-	 */
-	public function getRoutes(string $method) : array
-	{
-		assert(self::isValidMethod($method));
-
-		$routes = $this->routes[$method];
-
-		if ($method !== self::METHOD_ANY) {
-			$routes = \array_merge(
-				$this->routes[self::METHOD_ANY],
-				$routes,
-			);
-		}
-
-		return $routes;
-	}
-
-	public function findRoute(string $method, string $path) : ?Route
-	{
-		assert(self::isValidMethod($method));
-
-		$routes = self::getRoutes($method);
-
-		if (!\sizeof($routes)) {
-			return null;
-		}
-
-		foreach ($routes as $route) {
-			assert($route->getRawRegex() !== null);
-			assert($route->getTransformedRegex() !== null);
-
-			if (\preg_match_all($route->getTransformedRegex(), $path, $matches)) {
-				if ($route->hasRegexCaptures()) {
-					foreach ($route->getRegexCaptures() as $arg => $type) {
-						\settype($matches[$arg][0], $type);
-
-						$route->addArgument(
-							$arg,
-							$matches[$arg][0],
-						);
-					}
-				}
-
-				return $route;
-			}
-		}
-
-		return null;
 	}
 }

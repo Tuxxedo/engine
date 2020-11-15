@@ -14,22 +14,24 @@ declare(strict_types = 1);
 
 namespace Tuxxedo;
 
-use Tuxxedo\Router\Route;
+use Tuxxedo\Route;
 
-class Dispatcher
+abstract class Dispatcher
 {
 	protected Di $di;
-	protected Router $router;
+	protected RouterInterface $router;
 	protected ?\Closure $errorHandler = null;
 
-	public function __construct(Di $di, Router $router, \Closure $errorHandler = null)
+	public function __construct(Di $di, RouterInterface $router, \Closure $errorHandler = null)
 	{
+		assert(\is_a($router, $this->getRouterClass()));
+
 		$this->di = $di;
 		$this->router = $router;
 		$this->errorHandler = $errorHandler;
 	}
 
-	public function getRouter() : Router
+	public function getRouter() : RouterInterface
 	{
 		return $this->router;
 	}
@@ -44,7 +46,7 @@ class Dispatcher
 		return $this->errorHandler;
 	}
 
-	public function dispatch(string $method, string $path) : void
+	public function handle(string $method, string $path) : void
 	{
 		$route = $this->router->findRoute(
 			$method,
@@ -59,6 +61,29 @@ class Dispatcher
 
 		$this->forward(
 			$route,
+		);
+	}
+
+	protected function handleError(?Route $route = null) : void
+	{
+		if ($this->errorHandler !== null) {
+			($this->errorHandler)(
+				$this,
+				$route,
+			);
+
+			return;
+		}
+
+		if ($route !== null) {
+			throw new NotFoundException(
+				'The controller \'%s\' was not found',
+				$route->getFullyQualifiedController()
+			);
+		}
+
+		throw new NotFoundException(
+			'No route found for the requested method and path'
 		);
 	}
 
@@ -88,26 +113,5 @@ class Dispatcher
 		($callaback)();
 	}
 
-	protected function handleError(?Route $route = null) : void
-	{
-		if ($this->errorHandler !== null) {
-			($this->errorHandler)(
-				$this,
-				$route,
-			);
-
-			return;
-		}
-
-		if ($route !== null) {
-			throw new NotFoundException(
-				'The controller \'%s\' was not found',
-				$route->getFullyQualifiedController()
-			);
-		}
-
-		throw new NotFoundException(
-			'No route found for the requested method and path'
-		);
-	}
+	abstract public function getRouterClass() : string;
 }

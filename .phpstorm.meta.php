@@ -2,7 +2,6 @@
 
 namespace PHPSTORM_META
 {
-
 	use Tuxxedo\Collection;
 	use Tuxxedo\Di;
 

@@ -10,27 +10,31 @@
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */
 
+declare(strict_types = 1);
+
 namespace Tuxxedo;
 
+use Tuxxedo\Router\RouteInterface;
+
 /**
- * @property array<string, array<int, string>> $routes
+ * @property array<string, array<int, RouteInterface>> $routes
  */
 trait RouterTrait
 {
-	public function add(string $method, Route $route) : void
+	public function add(string $method, RouteInterface $route) : void
 	{
 		assert(self::isValidMethod($method));
 
 		$this->routes[$method][] = $route;
 	}
 
-	public function addAny(Route $route) : void
+	public function addAny(RouteInterface $route) : void
 	{
 		$this->add(self::METHOD_ANY, $route);
 	}
 
 	/**
-	 * @return Route[]
+	 * @return RouteInterface[]
 	 */
 	public function getRoutes(string $method) : array
 	{
@@ -46,38 +50,5 @@ trait RouterTrait
 		}
 
 		return $routes;
-	}
-
-	public function findRoute(string $method, string $path) : ?Route
-	{
-		assert(self::isValidMethod($method));
-
-		$routes = self::getRoutes($method);
-
-		if (!\sizeof($routes)) {
-			return null;
-		}
-
-		foreach ($routes as $route) {
-			assert($route->getRawRegex() !== null);
-			assert($route->getTransformedRegex($this::class) !== null);
-
-			if (\preg_match_all($route->getTransformedRegex($this::class), $path, $matches)) {
-				if ($route->hasRegexCaptures()) {
-					foreach ($route->getRegexCaptures() as $arg => $type) {
-						\settype($matches[$arg][0], $type);
-
-						$route->addArgument(
-							$arg,
-							$matches[$arg][0],
-						);
-					}
-				}
-
-				return $route;
-			}
-		}
-
-		return null;
 	}
 }

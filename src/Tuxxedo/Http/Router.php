@@ -10,9 +10,11 @@
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */
 
+declare(strict_types = 1);
+
 namespace Tuxxedo\Http;
 
-use Tuxxedo\Route;
+use Tuxxedo\Router\RouteInterface;
 use Tuxxedo\RouterInterface;
 use Tuxxedo\RouterTrait;
 
@@ -103,5 +105,41 @@ class Router implements RouterInterface
 	public function addPatch(Route $route) : void
 	{
 		$this->add(self::METHOD_PATCH, $route);
+	}
+
+	public function findRoute(string $method, string $path) : ?RouteInterface
+	{
+		assert(self::isValidMethod($method));
+
+		$routes = $this->getRoutes($method);
+
+		if (!\sizeof($routes)) {
+			return null;
+		}
+
+		foreach ($routes as $route) {
+			assert($route instanceof Route);
+			assert($route->getRawRegex() !== null);
+			assert($route->getTransformedRegex() !== null);
+
+			if (!\preg_match_all($route->getTransformedRegex(), $path, $matches)) {
+				continue;
+			}
+
+			if ($route->hasRegexCaptures()) {
+				foreach ($route->getRegexCaptures() as $arg => $type) {
+					\settype($matches[$arg][0], $type);
+
+					$route->addArgument(
+						$arg,
+						$matches[$arg][0],
+					);
+				}
+			}
+
+			return $route;
+		}
+
+		return null;
 	}
 }

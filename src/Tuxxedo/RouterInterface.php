@@ -14,20 +14,20 @@ declare(strict_types = 1);
 
 namespace Tuxxedo;
 
-use Tuxxedo\Route;
+use Tuxxedo\Router\RouteInterface;
 
 interface RouterInterface
 {
 	public const METHOD_ANY = 'ANY';
 
-	public function add(string $method, Route $route) : void;
+	public function add(string $method, RouteInterface $route) : void;
 
-	public function addAny(Route $route) : void;
+	public function addAny(RouteInterface $route) : void;
 
 	/**
-	 * @return Route[]
+	 * @return RouteInterface[]
 	 */
 	public function getRoutes(string $method) : array;
 
-	public function findRoute(string $method, string $path) : ?Route;
+	public function findRoute(string $method, string $path) : ?RouteInterface;
 }

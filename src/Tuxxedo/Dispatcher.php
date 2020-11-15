@@ -14,6 +14,8 @@ declare(strict_types = 1);
 
 namespace Tuxxedo;
 
+use Tuxxedo\Router\RouteInterface;
+
 abstract class Dispatcher
 {
 	protected Di $di;
@@ -62,7 +64,7 @@ abstract class Dispatcher
 		);
 	}
 
-	protected function fallback(?Route $route = null) : void
+	protected function fallback(?RouteInterface $route = null) : void
 	{
 		if ($this->fallback !== null) {
 			($this->fallback)(
@@ -85,7 +87,7 @@ abstract class Dispatcher
 		);
 	}
 
-	public function forward(Route $route) : void
+	public function forward(RouteInterface $route) : void
 	{
 		$callaback = [
 			new ($route->getFullyQualifiedController())(

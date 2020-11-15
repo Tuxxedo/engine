@@ -10,11 +10,14 @@
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */
 
+declare(strict_types = 1);
+
 namespace Tuxxedo\Cli;
 
 use Tuxxedo\Application as BaseApplication;
+use Tuxxedo\Cli\Attributes\Command as CommandAttribute;
+use Tuxxedo\Controller;
 use Tuxxedo\Di;
-use Tuxxedo\Route;
 
 abstract class Application extends BaseApplication
 {
@@ -43,31 +46,46 @@ abstract class Application extends BaseApplication
 
 		parent::__construct($di);
 
-		$this->commands();
+		$this->mounts();
 	}
 
-	public function add(string $command, string $controller, string $action) : void
+	public function mount(string $controllerClass) : void
 	{
-		$this->router->addAny(
-			new Route(
-				regex: $command,
-				controller: $controller,
-				action: $action,
-			)
-		);
-	}
+		assert(\class_exists($controllerClass));
+		assert(\is_a($controllerClass, Controller::class, true));
 
-	public function default(string $controller, string $action) : void
-	{
-		$this->dispatcher->setFallback(static function(Dispatcher $dispatcher) use($controller, $action): void {
-			$dispatcher->forward(
-				new Route(
-					regex: '',
-					controller: $controller,
-					action: $action,
-				)
-			);
-		});
+		$controller = new \ReflectionClass($controllerClass);
+
+		foreach ($controller->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+			if ($method->isConstructor()) {
+				continue;
+			}
+
+			$attributes = $method->getAttributes(CommandAttribute::class);
+
+			if (\sizeof($attributes) === 0) {
+				continue;
+			}
+
+			foreach ($attributes as $attribute) {
+				assert(isset($attribute->getArguments()[0]));
+
+				$splitControllerClass = \explode('\\', $controllerClass);
+				$command = \sprintf(
+					'%s:%s',
+					\strtolower(\end($splitControllerClass)),
+					$attribute->getArguments()[0],
+				);
+
+				$this->router->addAny(
+					new Command(
+						command: $command,
+						controller: $controllerClass,
+						action: $method->getName(),
+					)
+				);
+			}
+		}
 	}
 
 	// @todo Remove this temporary in favor of a Cli RequestInterface implementation
@@ -90,5 +108,5 @@ abstract class Application extends BaseApplication
 		);
 	}
 
-	abstract protected function commands() : void;
+	abstract protected function mounts() : void;
 }

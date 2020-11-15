@@ -10,6 +10,8 @@
  * ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
  */
 
+declare(strict_types = 1);
+
 namespace Tuxxedo\Database;
 
 use Tuxxedo\Database\Driver\Mysql;

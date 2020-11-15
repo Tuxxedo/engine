@@ -44,15 +44,28 @@ final class DiTest extends TestCase
 				$this->assertSame(Version::FULL, $version);
 			}
 		];
+
+		yield [
+			AppDiTest::class,
+			null,
+			function(AppDiTest $test) : void {
+				$this->assertIsObject($test);
+			}
+		];
 	}
 
 	/**
 	 * @dataProvider diServicesDataProvider
 	 */
-	public function testDiRegister(string $name, \Closure $initializer, \Closure $expectance) : void
+	public function testDiRegister(string $name, ?\Closure $initializer, \Closure $expectance) : void
 	{
 		$di = new Di;
-		$di->register($name, $initializer);
+
+		if ($initializer !== null) {
+			$di->register($name, $initializer);
+		} else {
+			$di->register($name);
+		}
 
 		$this->assertTrue($di->isRegistered($name));
 		$this->assertFalse($di->isLoaded($name));
@@ -65,10 +78,15 @@ final class DiTest extends TestCase
 	/**
 	 * @dataProvider diServicesDataProvider
 	 */
-	public function testDiUnregister(string $name, \Closure $initializer, \Closure $expectance) : void
+	public function testDiUnregister(string $name, ?\Closure $initializer, \Closure $expectance) : void
 	{
 		$di = new Di;
-		$di->register($name, $initializer);
+
+		if ($initializer !== null) {
+			$di->register($name, $initializer);
+		} else {
+			$di->register($name);
+		}
 
 		$this->assertTrue($di->isRegistered($name));
 		$this->assertFalse($di->isLoaded($name));

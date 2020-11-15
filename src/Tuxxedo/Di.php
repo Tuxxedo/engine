@@ -32,9 +32,15 @@ class Di
 		$this->loaded = [];
 	}
 
-	public function register(string $name, \Closure $callback) : void
+	public function register(string $name, \Closure $callback = null) : void
 	{
 		assert(!isset($this->services[$name]));
+
+		if ($callback === null) {
+			$callback = static function() use($name) : object {
+				return new $name;
+			};
+		}
 
 		$this->services[$name] = $callback;
 	}

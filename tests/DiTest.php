@@ -164,4 +164,8 @@ class AppDiTest
 {
 	public ?string $name = null;
 	public ?int $version = null;
+
+	public function __construct(Di $di = null)
+	{
+	}
 }

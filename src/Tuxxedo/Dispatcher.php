@@ -20,15 +20,15 @@ abstract class Dispatcher
 {
 	protected Di $di;
 	protected RouterInterface $router;
-	protected ?\Closure $errorHandler = null;
+	protected ?\Closure $fallback = null;
 
-	public function __construct(Di $di, RouterInterface $router, \Closure $errorHandler = null)
+	public function __construct(Di $di, RouterInterface $router, \Closure $fallback = null)
 	{
 		assert(\is_a($router, $this->getRouterClass()));
 
 		$this->di = $di;
 		$this->router = $router;
-		$this->errorHandler = $errorHandler;
+		$this->fallback = $fallback;
 	}
 
 	public function getRouter() : RouterInterface
@@ -36,14 +36,14 @@ abstract class Dispatcher
 		return $this->router;
 	}
 
-	public function setErrorHandler(?\Closure $errorHandler) : void
+	public function setFallback(?\Closure $fallback) : void
 	{
-		$this->errorHandler = $errorHandler;
+		$this->fallback = $fallback;
 	}
 
-	public function getErrorHandler() : ?\Closure
+	public function getFallback() : ?\Closure
 	{
-		return $this->errorHandler;
+		return $this->fallback;
 	}
 
 	public function handle(string $method, string $path) : void
@@ -54,7 +54,7 @@ abstract class Dispatcher
 		);
 
 		if ($route === null) {
-			$this->handleError();
+			$this->fallback();
 
 			return;
 		}
@@ -64,10 +64,10 @@ abstract class Dispatcher
 		);
 	}
 
-	protected function handleError(?Route $route = null) : void
+	protected function fallback(?Route $route = null) : void
 	{
-		if ($this->errorHandler !== null) {
-			($this->errorHandler)(
+		if ($this->fallback !== null) {
+			($this->fallback)(
 				$this,
 				$route,
 			);
@@ -97,7 +97,7 @@ abstract class Dispatcher
 		];
 
 		if (!$callaback[0] instanceof Controller || !\is_callable($callaback)) {
-			$this->handleError($route);
+			$this->fallback($route);
 
 			return;
 		}

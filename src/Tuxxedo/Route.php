@@ -59,7 +59,9 @@ class Route
 
 		// @todo This needs to support CLI by checking $routerClass for the syntax:
 		//
-		// Note that quotes can be optional, and the quote style cannot be mixed
+		// - Quotes are optional and an unquoted value with a space will not be picked up
+		// - Both " and ' are supported, but cannot be mixed
+		// - The order of arguments can be any
 		//
 		// OLD REGEX: make:route {a:[a-z]} {b:int[0-9]+}
 		// NEW REGEX: make:route \-\-a="(?<a>[a-z])" \-\-b=(?<b>[0-9]+)

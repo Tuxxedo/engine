@@ -37,8 +37,10 @@ class Di
 		assert(!isset($this->services[$name]));
 
 		if ($callback === null) {
-			$callback = static function() use($name) : object {
-				return new $name;
+			$callback = static function(Di $di) use($name) : object {
+				return new $name(
+					di: $di,
+				);
 			};
 		}
 

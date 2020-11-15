@@ -14,8 +14,6 @@ declare(strict_types = 1);
 
 namespace Tuxxedo;
 
-use Tuxxedo\Route;
-
 abstract class Dispatcher
 {
 	protected Di $di;

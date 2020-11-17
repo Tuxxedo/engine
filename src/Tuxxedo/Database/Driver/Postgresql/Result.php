@@ -160,10 +160,10 @@ class Result implements ResultInterface
 			$numberOfFields = \pg_num_fields($this->result);
 			for ($i = 0; $i < $numberOfFields; $i++) {
 				$fieldType = match(\pg_field_type($this->result, $i)) {
-					'bool' => 'bool',
-					'int2','int4','int8' => 'int',
-					'float4','float8' => 'float',
-					default => 'string',
+					'bool'			=> 'bool',
+					'int2','int4','int8'	=> 'int',
+					'float4','float8'	=> 'float',
+					default			=> 'string',
 				};
 				\settype($array[$i], $fieldType);
 			}
@@ -187,7 +187,7 @@ class Result implements ResultInterface
 			if (empty($this->typeMap)) {
 				$this->createTypeMap();
 			}
-			
+
 			foreach ($this->typeMap as $key => $type) {
 				\settype($assoc[$key], $type);
 			}

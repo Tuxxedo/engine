@@ -47,8 +47,6 @@ class Result implements ResultInterface
 		$this->affectedRows = \pg_affected_rows($result);
 
 		$this->result = $result;
-
-		$this->createTypeMap();
 	}
 
 	private function createTypeMap(): void {
@@ -135,6 +133,10 @@ class Result implements ResultInterface
 		assert($result === null || $result instanceof ResultRow);
 		
 		if ($result) {
+			if (empty($this->typeMap)) {
+				$this->createTypeMap();
+			}
+
 			foreach ($this->typeMap as $key => $type) {
 				\settype($result->{$key}, $type);
 			}
@@ -182,6 +184,10 @@ class Result implements ResultInterface
 		$assoc = \pg_fetch_assoc($this->result, null);
 
 		if ($assoc) {
+			if (empty($this->typeMap)) {
+				$this->createTypeMap();
+			}
+			
 			foreach ($this->typeMap as $key => $type) {
 				\settype($assoc[$key], $type);
 			}

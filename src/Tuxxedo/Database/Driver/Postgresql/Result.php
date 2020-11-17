@@ -56,10 +56,10 @@ class Result implements ResultInterface
 		for ($i = 0; $i < $numberOfFields; $i++) {
 			$fieldName = \pg_field_name($this->result, $i);
 			$fieldType = match(\pg_field_type($this->result, $i)) {
-				'bool'					=> 'bool',
+				'bool'			=> 'bool',
 				'int2','int4','int8'	=> 'int',
-				'float4','float8'		=> 'float',
-				default					=> 'string',
+				'float4','float8'	=> 'float',
+				default			=> 'string',
 			};
 			$this->typeMap[$fieldName] = $fieldType;
 		}

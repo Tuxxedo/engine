@@ -23,7 +23,7 @@ interface ResultInterface extends \Iterator, \Countable
 
 	public function getAffectedRows() : int;
 
-	public function fetch() : ?object;
+	public function fetch() : ?ResultRow;
 
 	/**
 	 * @return array<int, mixed>|null

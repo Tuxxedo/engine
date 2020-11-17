@@ -126,9 +126,9 @@ class Result implements ResultInterface
 	}
 
 	/**
-	 * @return object|null
+	 * @return ResultRow|null
 	 */
-	public function fetch() : ?object
+	public function fetch() : ?ResultRow
 	{
 		$result = $this->fetchObject(ResultRow::class);
 

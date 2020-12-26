@@ -138,7 +138,13 @@ class Result implements ResultInterface
 			}
 
 			foreach ($this->typeMap as $key => $type) {
-				\settype($result->{$key}, $type);
+				if ($result->{$key} !== null) {
+					if ($type === 'bool') {
+						$result->{$key} = $result->{$key} === 't';
+					} else {
+						\settype($result->{$key}, $type);
+					}
+				}
 			}
 		}
 
@@ -165,7 +171,14 @@ class Result implements ResultInterface
 					'float4','float8'	=> 'float',
 					default			=> 'string',
 				};
-				\settype($array[$i], $fieldType);
+
+				if ($array[$i] !== null) {
+					if ($type === 'bool') {
+						$array[$i] = $array[$i] === 't';
+					} else {
+						\settype($array[$i], $type);
+					}
+				}
 			}
 		}
 
@@ -189,7 +202,13 @@ class Result implements ResultInterface
 			}
 
 			foreach ($this->typeMap as $key => $type) {
-				\settype($assoc[$key], $type);
+				if ($array[$key] !== null) {
+					if ($type === 'bool') {
+						$array[$key] = $array[$key] === 't';
+					} else {
+						\settype($array[$key], $type);
+					}
+				}
 			}
 		}
 

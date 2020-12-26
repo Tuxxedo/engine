@@ -105,11 +105,15 @@ class Result implements ResultInterface
 	}
 
 	/**
-	 * @return object|null
+	 * @return ResultRow|null
 	 */
-	public function fetch() : ?object
+	public function fetch() : ?ResultRow
 	{
-		return $this->fetchObject(ResultRow::class);
+		$result = $this->fetchObject(ResultRow::class);
+
+		assert($result === null || $result instanceof ResultRow);
+
+		return $result;
 	}
 
 	/**

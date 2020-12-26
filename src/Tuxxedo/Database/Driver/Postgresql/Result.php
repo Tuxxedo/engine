@@ -29,6 +29,12 @@ class Result implements ResultInterface
 	private int $affectedRows = 0;
 
 	/**
+	 * Key is the field name, val is the cast type
+	 * @var array<string,string>
+	 */
+	private array $typeMap = [];
+
+	/**
 	 * @param Connection $link
 	 * @param mixed $result
 	 */
@@ -41,6 +47,22 @@ class Result implements ResultInterface
 		$this->affectedRows = \pg_affected_rows($result);
 
 		$this->result = $result;
+	}
+
+	private function createTypeMap(): void {
+		assert($this->result !== null);
+
+		$numberOfFields = \pg_num_fields($this->result);
+		for ($i = 0; $i < $numberOfFields; $i++) {
+			$fieldName = \pg_field_name($this->result, $i);
+			$fieldType = match(\pg_field_type($this->result, $i)) {
+				'bool'			=> 'bool',
+				'int2','int4','int8'	=> 'int',
+				'float4','float8'	=> 'float',
+				default			=> 'string',
+			};
+			$this->typeMap[$fieldName] = $fieldType;
+		}
 	}
 
 	public function getAffectedRows() : int
@@ -102,11 +124,31 @@ class Result implements ResultInterface
 	}
 
 	/**
-	 * @return object|null
+	 * @return ResultRow|null
 	 */
-	public function fetch() : ?object
+	public function fetch() : ?ResultRow
 	{
-		return $this->fetchObject(ResultRow::class);
+		$result = $this->fetchObject(ResultRow::class);
+
+		assert($result === null || $result instanceof ResultRow);
+		
+		if ($result) {
+			if (empty($this->typeMap)) {
+				$this->createTypeMap();
+			}
+
+			foreach ($this->typeMap as $key => $type) {
+				if ($result->{$key} !== null) {
+					if ($type === 'bool') {
+						$result->{$key} = $result->{$key} === 't';
+					} else {
+						\settype($result->{$key}, $type);
+					}
+				}
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -119,6 +161,27 @@ class Result implements ResultInterface
 
 		/** @var array<string>|false $array */
 		$array = \pg_fetch_array($this->result, null, \PGSQL_NUM);
+
+		if ($array) {
+			$numberOfFields = \pg_num_fields($this->result);
+			for ($i = 0; $i < $numberOfFields; $i++) {
+				$fieldType = match(\pg_field_type($this->result, $i)) {
+					'bool'			=> 'bool',
+					'int2','int4','int8'	=> 'int',
+					'float4','float8'	=> 'float',
+					default			=> 'string',
+				};
+
+				if ($array[$i] !== null) {
+					if ($type === 'bool') {
+						$array[$i] = $array[$i] === 't';
+					} else {
+						\settype($array[$i], $type);
+					}
+				}
+			}
+		}
+
 		return $array ?: null;
 	}
 
@@ -132,6 +195,22 @@ class Result implements ResultInterface
 
 		/** @var array<string, string>|false $assoc */
 		$assoc = \pg_fetch_assoc($this->result, null);
+
+		if ($assoc) {
+			if (empty($this->typeMap)) {
+				$this->createTypeMap();
+			}
+
+			foreach ($this->typeMap as $key => $type) {
+				if ($array[$key] !== null) {
+					if ($type === 'bool') {
+						$array[$key] = $array[$key] === 't';
+					} else {
+						\settype($array[$key], $type);
+					}
+				}
+			}
+		}
 
 		return $assoc ?: null;
 	}
